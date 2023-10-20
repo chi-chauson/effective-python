@@ -1018,6 +1018,2768 @@
                   </section>
                   <section>Avoid using <u>else</u> blocks after loops because their behavior isn’t intuitive and can be confusing.</section>
                 </section>
+                <section>
+                  <section>Item 10</section>
+                  <section>Prevent Repetition with Assignment Expressions</section>
+                  <section>An assignment expression — also known as the walrus operator (<b style="color:blue"> := </b>)</section>
+                  <section>Assignment expressions use the walrus operator (<b style="color:blue"> := </b>) to both assign and evaluate variable names in a single expression, thus reducing repetition.</section>
+                  <section data-markdown>
+                     <textarea data-template>
+                       ```python
+                       fresh_fruit = {
+                           'apple': 10,
+                           'banana': 8,
+                           'lemon': 5,
+                       }
+                       ```
+                     </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def make_lemonade(count):
+                          ...
+                      def out_of_stock():
+                          ...
+                      
+                      count = fresh_fruit.get('lemon', 0)
+                      if count:
+                          make_lemonade(count)
+                      else:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>  
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      if count := fresh_fruit.get('lemon', 0):
+                          make_lemonade(count)
+                      else:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def make_cider(count):
+                          ...
+                      count = fresh_fruit.get('apple', 0)
+                      if count >= 4:
+                          make_cider(count)
+                      else:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section>When an assignment expression is a subexpression of a larger expression, it must be surrounded with parentheses.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      if (count := fresh_fruit.get('apple', 0)) >= 4:
+                          make_cider(count)
+                      else:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def slice_bananas(count):
+                          ...
+                      
+                      class OutOfBananas(Exception):
+                          pass
+                      
+                      def make_smoothies(count):
+                          ...
+                      
+                      pieces = 0
+                      count = fresh_fruit.get('banana', 0)
+                      if count >= 2:
+                          pieces = slice_bananas(count)
+                      
+                      try:
+                          smoothies = make_smoothies(pieces)
+                      except OutOfBananas:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      count = fresh_fruit.get('banana', 0)
+                      if count >= 2:
+                          pieces = slice_bananas(count)
+                      else:
+                          pieces = 0
+                      
+                      try:
+                          smoothies = make_smoothies(pieces)
+                      except OutOfBananas:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      pieces = 0
+                      if (count := fresh_fruit.get('banana', 0)) >= 2:
+                          pieces = slice_bananas(count)
+                      
+                      try:
+                          smoothies = make_smoothies(pieces)
+                      except OutOfBananas:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      if (count := fresh_fruit.get('banana', 0)) >= 2:
+                          pieces = slice_bananas(count)
+                      else:
+                          pieces = 0
+                      
+                      try:
+                          smoothies = make_smoothies(pieces)
+                      except OutOfBananas:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Although switch/case statements and do/while loops are not available in Python, their functionality can be emulated much more clearly by using assignment expressions.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      count = fresh_fruit.get('banana', 0)
+                      if count >= 2:
+                          pieces = slice_bananas(count)
+                          to_enjoy = make_smoothies(pieces)
+                      else:
+                          count = fresh_fruit.get('apple', 0)
+                          if count >= 4:
+                              to_enjoy = make_cider(count)
+                          else:
+                              count = fresh_fruit.get('lemon', 0)
+                              if count:
+                                 to_enjoy = make_lemonade(count)
+                              else:
+                                 to_enjoy‘= 'Nothing'
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      if (count := fresh_fruit.get('banana', 0)) >= 2:
+                          pieces = slice_bananas(count)
+                          to_enjoy = make_smoothies(pieces)
+                      elif (count := fresh_fruit.get('apple', 0)) >= 4:
+                          to_enjoy = make_cider(count)
+                      elif count := fresh_fruit.get('lemon', 0):
+                          to_enjoy = make_lemonade(count)
+                      else:
+                          to_enjoy = 'Nothing'
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def pick_fruit():
+                          ...
+                      
+                      def make_juice(fruit, count):
+                          ...
+                      
+                      bottles = []
+                      fresh_fruit = pick_fruit()
+                      while fresh_fruit:
+                          for fruit, count in fresh_fruit.items():
+                              batch = make_juice(fruit, count)
+                              bottles.extend(batch)
+                          fresh_fruit = pick_fruit()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      bottles = []
+                      while True:                    # Loop
+                          fresh_fruit = pick_fruit()
+                          if not fresh_fruit:        # And a half
+                              break
+                      
+                          for fruit, count in fresh_fruit.items():
+                              batch = make_juice(fruit, count)
+                              bottles.extend(batch)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      bottles = []
+                      while fresh_fruit := pick_fruit():
+                          for fruit, count in fresh_fruit.items():
+                              batch = make_juice(fruit, count)
+                              bottles.extend(batch)
+                      ```
+                    </textarea>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 11</section>
+                  <section>Know How to Slice Sequences</section>
+                  <section>The basic form of the slicing syntax is <b style="color:green">somelist</b><b style="color:yellow">[start:end]</b>, where start is inclusive and end is exclusive</section>
+                  <section data-markdown>
+                     <textarea data-template>
+                       ```python
+                       a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+                       print('Middle two:  ', a[3:5])
+                       print('All but ends:', a[1:7]) 
+                       ```
+                       ```text
+                       >>>
+                       Middle two:   ['d', 'e']
+                       All but ends: ['b', 'c', 'd', 'e', 'f', 'g']                   
+                       ```
+                     </textarea>
+                  </section>
+                  <section>Avoid being verbose when slicing: Don’t supply 0 for the start index or the length of the sequence for the end index.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      assert a[:5] == a[0:5]
+                      assert a[5:] == a[5:len(a)]
+                      ```
+                      ```python
+                      a[:]      # ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+                      a[:5]     # ['a', 'b', 'c', 'd', 'e']
+                      a[:-1]    # ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+                      a[4:]     #                     ['e', 'f', 'g', 'h']
+                      a[-3:]    #                          ['f', 'g', 'h']
+                      a[2:5]    #           ['c', 'd', 'e']
+                      a[2:-1]   #           ['c', 'd', 'e', 'f', 'g']
+                      a[-3:-1]  #                          ['f', 'g']
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Slicing is forgiving of start or end indexes that are out of bounds, which means it’s easy to express slices on the front or back boundaries of a sequence</section>
+                  <section data-markdown>
+                   <textarea data-template>
+                     ```python
+                     first_twenty_items = a[:20]
+                     last_twenty_items = a[-20:]
+                     ```
+                   </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      a[20]
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      IndexError: list index out of range
+                      ```
+                    </textarea>
+                  </section>
+                  <section>The result of slicing a list is a whole new list. References to the objects from the original list are maintained. Modifying the result of slicing won’t affect the original list</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      b = a[3:]
+                      print('Before:   ', b)
+                      b[1] = 99
+                      print('After:    ', b)
+                      print('No change:', a)
+                      ```
+                      ```text
+                      >>>
+                      Before:    ['d', 'e', 'f', 'g', 'h']
+                      After:     ['d', 99, 'f', 'g', 'h']
+                      No change: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Assigning to a list slice replaces that range in the original sequence with what’s referenced even if the lengths are different.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      print('Before ', a)
+                      a[2:7] = [99, 22, 14]
+                      print('After  ', a)
+                      ```
+                      ```text
+                      >>>
+                      Before  ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+                      After   ['a', 'b', 99, 22, 14, 'h']
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      print('Before ', a)
+                      a[2:3] = [47, 11]
+                      print('After  ', a)
+                      ```
+                      ```text
+                      >>>
+                      Before  ['a', 'b', 99, 22, 14, 'h']
+                      After   ['a', 'b', 47, 11, 22, 14, 'h']
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      b = a[:]
+                      assert b == a and b is not a
+                      ```
+                      ```python
+                      b = a
+                      print('Before a', a)
+                      print('Before b', b)
+                      a[:] = [101, 102, 103]
+                      assert a is b             # Still the same list object
+                      print('After a ', a)      # Now has different contents
+                      print('After b ', b)      # Same list, so same contents as a
+                      ```
+                      ```text
+                      >>>
+                      Before a ['a', 'b', 47, 11, 22, 14, 'h']
+                      Before b ['a', 'b', 47, 11, 22, 14, 'h']
+                      After a  [101, 102, 103]
+                      After b  [101, 102, 103]
+                      ```
+                    </textarea>
+                  </section>
+                  
+                </section>
+                <section>
+                  <section>Item 12</section>
+                  <section>Avoid Striding and Slicing in a Single Expression</section>
+                  <section>Python has special syntax for the stride of a slice in the form <b style="color:green">somelist</b><b style="color:yellow">[start:end:stride]</b></section>
+                  <section data-markdown>
+                     <textarea data-template>
+                       ```python
+                       x = ['red', 'orange', 'yellow', 'green', 'blue', 'purple']
+                       odds = x[::2]
+                       evens = x[1::2]
+                       print(odds)
+                       print(evens)
+                       ```
+                       ```text
+                       >>>
+                       ['red', 'yellow', 'blue']
+                       ['orange', 'green', 'purple']
+                       ```
+                     </textarea>
+                  </section>
+                  <section>The problem is that the stride syntax often causes unexpected behavior that can introduce bugs.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      x = b'mongoose'
+                      y = x[::-1]
+                      print(y)
+
+                      x = '寿司'
+                      y = x[::-1]
+                      print(y)
+                      ```
+                      ```text
+                      >>>
+                      b'esoognom'
+                      司寿
+                      ```
+                    </textarea>
+                 </section>
+                 <section data-markdown>
+                  <textarea data-template>
+                    ```python
+                    w = '寿司'
+                    x = w.encode('utf-8')
+                    y = x[::-1]
+                    z = y.decode('utf-8')
+                    ```
+                    ```text
+                    >>>
+                    Traceback ...
+                    UnicodeDecodeError: 'utf-8' codec can't decode byte 0xb8 in
+                    position 0: invalid start byte
+                    ```
+                  </textarea>
+                 </section>
+                 <section data-markdown>
+                  <textarea data-template>
+                    ```python
+                    x = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+                    x[::2]   # ['a', 'c', 'e', 'g']
+                    x[::-2]  # ['h', 'f', 'd', 'b']
+                    ```
+                  </textarea>
+                 </section>
+                 <section>Specifying start, end, and stride in a slice can be extremely confusing.</section>
+                 <section>What do you think <b style="color:yellow">2::2</b> means? What about <b style="color:yellow">-2::-2</b> vs. <b style="color:yellow">-2:2:-2</b> vs. <b style="color:yellow">2:2:-2</b>?</section>
+                 <section data-markdown>
+                  <textarea data-template>
+                    ```python
+                    x[2::2]     # ['c', 'e', 'g']
+                    x[-2::-2]   # ['g', 'e', 'c', 'a']
+                    x[-2:2:-2]  # ['g', 'e']
+                    x[2:2:-2]   # []
+                    ```
+                  </textarea>
+                 </section>
+                 <section>Avoid using a stride along with start and end indexes.</section>
+                 <section>If you must use a stride, prefer making it a positive value and omit start and end indexes.</section>
+                 <section>If you must use a stride with start or end indexes, consider using one assignment for striding and another for slicing</section>
+                 <section data-markdown>
+                  <textarea data-template>
+                    ```python
+                    y = x[::2]   # ['a', 'c', 'e', 'g']
+                    z = y[1:-1]  # ['c', 'e']
+                    ```
+                  </textarea>
+                 </section>
+                </section>
+                <section>
+                  <section>Item 13</section>
+                  <section>Prefer Catch-All Unpacking Over Slicing</section>
+                  <section data-markdown>
+                     <textarea data-template>
+                       ```python
+                       car_ages = [0, 9, 4, 8, 7, 20, 19, 1, 6, 15]
+                       car_ages_descending = sorted(car_ages, reverse=True)
+                       oldest, second_oldest = car_ages_descending
+                       ```
+                       ```text
+                       >>>
+                       Traceback ...
+                       ValueError: too many values to unpack (expected 2)
+                       ```
+                     </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      oldest = car_ages_descending[0]
+                      second_oldest = car_ages_descending[1]
+                      others = car_ages_descending[2:]
+                      print(oldest, second_oldest, others)
+                      ```
+                      ```text
+                      >>>
+                      20 19 [15, 9, 8, 7, 6, 4, 1, 0]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Python supports catch-all unpacking through a starred expression.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      oldest, second_oldest, *others = car_ages_descending
+                      print(oldest, second_oldest, others)
+                      ```
+                      ```text
+                      >>>
+                      20 19 [15, 9, 8, 7, 6, 4, 1, 0]
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      oldest, *others, youngest = car_ages_descending
+                      print(oldest, youngest, others)
+                      
+                      *others, second_youngest, youngest = car_ages_descending
+                      print(youngest, second_youngest, others)
+                      ```
+                      ```text
+                      >>>
+                      20 0 [19, 15, 9, 8, 7, 6, 4, 1]
+                      0 1 [20, 19, 15, 9, 8, 7, 6, 4]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>To unpack assignments, you cannot use only a starred expression.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      *others = car_ages_descending
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      SyntaxError: starred assignment target must be in a list or
+                      ➥tuple
+                      ```
+                    </textarea>
+                  </section>
+                  <section>You cannot have more than one starred expression in the assignment.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      first, *middle, *second_middle, last = [1, 2, 3, 4]
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      SyntaxError: two starred expressions in assignment
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Even not recommended,  it is possible to use multiple starred expressions in an unpacking assignment statement, as long as they’re catch-alls for different parts of the multilevel structure being unpacked.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      car_inventory = {
+                          'Downtown': ('Silver Shadow', 'Pinto', 'DMC'),
+                          'Airport': ('Skyline', 'Viper', 'Gremlin', 'Nova'),
+                      
+                      }
+                      
+                      ((loc1, (best1, *rest1)),
+                       (loc2, (best2, *rest2))) = car_inventory.items()
+                      print(f'Best at {loc1} is {best1}, {len(rest1)} others')
+                      print(f'Best at {loc2} is {best2}, {len(rest2)} others')
+                      ```
+                      ```text
+                      >>>
+                      Best at Downtown is Silver Shadow, 2 others
+                      Best at Airport is Skyline, 3 others
+                      ```
+                    </textarea>
+                  </section>
+                  <section>If there are no leftover items from the sequence being unpacked, the catch-all part will be an empty list.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      short_list = [1, 2]
+                      first, second, *rest = short_list
+                      print(first, second, rest)
+
+                      ```
+                      ```text
+                      >>>
+                      1 2 []
+                      ```
+                    </textarea>
+                  </section>
+                  <section>You can unpack arbitrary iterators with the unpacking syntax.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      it = iter(range(1, 3))
+                      first, second = it
+                      print(f'{first} and {second}')
+                      ```
+                      ```text
+                      >>>
+                      1 and 2
+                      ```
+                    </textarea>
+                  </section>
+                  <section>It is not that useful for the example above because ...</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      l = list(range(1, 3))
+                      first, second = l
+                      print(f'{first} and {second}')
+                      ```
+                      ```text
+                      >>>
+                      1 and 2
+                      ```
+                    </textarea>
+                  </section>
+                  <section>But with the addition of starred expressions, the value of unpacking iterators becomes clear. </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def generate_csv():
+                          yield ('Date', 'Make', 'Model', 'Year', 'Price')
+                      ...
+                      ```
+                      ```python
+                      all_csv_rows = list(generate_csv())
+                      header = all_csv_rows[0]
+                      rows = all_csv_rows[1:]
+                      print('CSV Header:', header)
+                      print('Row count: ', len(rows))
+                      ```
+                      ```text
+                      >>>
+                      CSV Header: ('Date', 'Make', 'Model', 'Year', 'Price')
+                      Row count:  200
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def generate_csv():
+                          yield ('Date', 'Make', 'Model', 'Year', 'Price')
+                      ...
+                      ```
+                      ```python
+                      it = generate_csv()
+                      header, *rows = it
+                      print('CSV Header:', header)
+                      print('Row count: ', len(rows))
+                      ```
+                      ```text
+                      >>>
+                      CSV Header: ('Date', 'Make', 'Model', 'Year', 'Price')
+                      Row count:  200
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Things to Remember ... </section>
+                  <section>Unpacking assignments may use a starred expression to catch all values that weren’t assigned to the other parts of the unpacking pattern into a <u>list</u>.</section>
+                  <section>Starred expressions may appear in any position, and they will always become a <u>list</u> containing the zero or more values they receive.</section>
+                  <section>When dividing a <u>list</u> into non-overlapping pieces, catch-all unpacking is much less error prone than slicing and indexing.</section>
+                </section>
+                <section>
+                  <section>Item 14</section>
+                  <section>Sort by Complex Criteria Using the <b style="color:green">key</b> Parameter</section>
+                  <section> The <b style="color:green">sort</b> method of the list type can be used to rearrange a list’s contents by the natural ordering of built-in types like strings, integers, tuples, and so on.</section>
+                  <section data-markdown>
+                     <textarea data-template>
+                       ```python
+                       numbers = [93, 86, 11, 68, 70]
+                       numbers.sort()
+                       print(numbers)
+                       ```
+                       ```text
+                       >>>
+                       [11, 68, 70, 86, 93]
+                       ```
+                     </textarea>
+                  </section>
+                  <section>The <b style="color:green">sort</b> method doesn’t work for objects unless they define a natural ordering using special methods, which is uncommon.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      class Tool:
+                          def __init__(self, name, weight):
+                              self.name = name
+                              self.weight = weight
+                      
+                          def __repr__(self):
+                              return f'Tool({self.name!r}, {self.weight})'
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      tools = [
+                          Tool('level', 3.5),
+                          Tool('hammer', 1.25),
+                          Tool('screwdriver', 0.5),
+                          Tool('chisel', 0.25),
+                      ]
+    
+                      tools.sort()
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      TypeError: '<' not supported between instances of 'Tool' and
+                      'Tool'
+                      ```
+                    </textarea>
+                  </section>
+                  <section>The <b style="color:green">key</b> parameter of the <b style="color:green">sort</b> method can be used to supply a helper function that returns the value to use for sorting in place of each item from the list.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      print('Unsorted:', repr(tools))
+                      tools.sort(key=lambda x: x.name)
+                      print('\nSorted: ', tools)
+                      ```
+                      ```text
+                      >>>
+                      Unsorted: [Tool('level',        3.5),
+                                 Tool('hammer',       1.25),
+                                 Tool('screwdriver',  0.5),
+                                 Tool('chisel',       0.25)]
+                      
+                      
+                      Sorted: [Tool('chisel',         0.25),
+                               Tool('hammer',         1.25),
+                               Tool('level',          3.5),
+                               Tool('screwdriver',    0.5)]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Next one is sorted by weight</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      tools.sort(key=lambda x: x.weight)
+                      print('By weight:', tools)
+                      ```
+                      ```text
+                      >>>
+                      By weight: [Tool('chisel',      0.25),
+                                  Tool('screwdriver', 0.5),
+                                  Tool('hammer',      1.25),
+                                  Tool('level',       3.5)]
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      places = ['home', 'work', 'New York', 'Paris']
+                      places.sort()
+                      print('Case sensitive: ', places)
+                      places.sort(key=lambda x: x.lower())
+                      print('Case insensitive:', places)
+                      ```
+                      ```text
+                      >>>
+                      Case sensitive: ['New York', 'Paris', 'home', 'work']
+                      Case insensitive: ['home', 'New York', 'Paris', 'work']
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Returning a tuple from the <b style="color:green">key</b> parameter function allows you to combine multiple sorting criteria together. </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      power_tools = [
+                          Tool('drill', 4),
+                          Tool('circular saw', 5),
+                          Tool('jackhammer', 40),
+                          Tool('sander', 4),
+                      ]
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      saw = (5, 'circular saw')
+                      jackhammer = (40, 'jackhammer')
+                      assert not (jackhammer < saw) # Matches expectations
+
+                      drill = (4, 'drill')
+                      sander = (4, 'sander')
+                      assert drill[0] == sander[0] # Same weight
+                      assert drill[1] < sander[1]  # Alphabetically less
+                      assert drill < sander        # Thus, drill comes first
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Therefore ...</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      power_tools.sort(key=lambda x: (x.weight, x.name))
+                      print(power_tools)
+                      ```
+                      ```text
+                      >>>
+                      [Tool('drill',        4),
+                       Tool('sander',       4),
+                       Tool('circular saw', 5),
+                       Tool('jackhammer',   40)]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>The unary minus operator can be used to reverse individual sort orders for types that allow it.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      power_tools.sort(key=lambda x: (-x.weight, x.name))
+                      print(power_tools)
+                      ```
+                      ```text
+                      >>>
+                      [Tool('jackhammer',   40),
+                       Tool('circular saw', 5),
+                       Tool('drill',        4),
+                       Tool('sander',       4)]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Unfortunately, unary negation isn’t possible for all types.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      power_tools.sort(key=lambda x: (x.weight, -x.name),
+                                       reverse=True)
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      TypeError: bad operand type for unary -: 'str'
+                      ```
+                    </textarea>
+                  </section>
+                  <section>For types that can’t be negated, you can combine many sorting criteria together by calling the <b style="color:green">sort</b> method multiple times using different <b style="color:green">key</b> functions and reverse values, in the order of lowest rank <b style="color:green">sort</b> call to highest rank <b style="color:green">sort</b> call.</section>
+                  <section>It is possible because Python provides a stable sorting algorithm</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      power_tools.sort(key=lambda x: x.name) # Name ascending
+                      power_tools.sort(key=lambda x: x.weight, # Weight descending
+                                       reverse=True)
+                      print(power_tools)
+                      ```
+                      ```text
+                      >>>
+                      [Tool('jackhammer',   40),
+                       Tool('circular saw', 5),
+                       Tool('drill',        4),
+                       Tool('sander',       4)]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Here is again how the stable storing algorithm makes it work.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      power_tools.sort(key=lambda x: x.name)
+                      print(power_tools)
+                      ```
+                      ```text
+                      >>>
+                      [Tool('circular saw', 5),
+                       Tool('drill',        4),
+                       Tool('jackhammer',   40),
+                       Tool('sander',       4)]
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      power_tools.sort(key=lambda x: x.weight,
+                                       reverse=True)
+                      print(power_tools)
+                      ```
+                      ```text
+                      >>>
+                      [Tool('jackhammer',   40),
+                       Tool('circular saw', 5),
+                       Tool('drill',        4),
+                       Tool('sander',       4)]
+                      ```
+                    </textarea>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 15</section>
+                  <section>Be Cautious When Relying on <b style="color:gold">dict</b> Insertion Ordering</section>
+                  <section>Since Python 3.7, you can rely on the fact that iterating a <b style="color:gold">dict</b> instance’s contents will occur in the same order in which the keys were initially added.</section>
+                  <section data-markdown>
+                     <textarea data-template>
+                       ```python
+                       # Python 3.5
+                       baby_names = {
+                           'cat': 'kitten',
+                           'dog': 'puppy',
+                       }
+                       print(baby_names)
+                       ```
+                       ```text
+                       >>>
+                       {'dog': 'puppy', 'cat': 'kitten'}
+                       ```
+                     </textarea>
+                  </section>
+                  <section>Python 3.7 and the subsequent versions ...</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # Python 3.7
+                      baby_names = {
+                          'cat': 'kitten',
+                          'dog': 'puppy',
+                      }
+                      print(baby_names)
+                      ```
+                      ```text
+                      >>>
+                      {'cat': 'kitten', 'dog': 'puppy'}
+                      ```
+                    </textarea>
+                  </section>
+                  <section>This change applies to methods provided by <b style="color:gold">dict</b> such as <b style="color:green">keys</b>, <b style="color:green">values</b>, <b style="color:green">items</b>, and <b style="color:green">popitem</b> as well</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # Python 3.5
+                      print(list(baby_names.keys()))
+                      print(list(baby_names.values()))
+                      print(list(baby_names.items()))
+                      print(baby_names.popitem())  # Randomly chooses an item
+                      print(baby_names)
+                      ```
+                      ```text
+                      >>>
+                      ['dog', 'cat']
+                      ['puppy', 'kitten']
+                      [('dog', 'puppy'), ('cat', 'kitten')]
+                      ('dog', 'puppy')
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Official behavior in Python 3.7 ...</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      print(list(baby_names.keys()))
+                      print(list(baby_names.values()))
+                      print(list(baby_names.items()))
+                      print(baby_names.popitem())  # Randomly chooses an item
+                      print(baby_names)
+                      ```
+                      ```text
+                      >>>
+                      ['cat', 'dog']
+                      ['kitten', 'puppy']
+                      [('cat', 'kitten'), ('dog', 'puppy')]
+                      ('dog', 'puppy')
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Some implications ...</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # Python 3.5
+                      def my_func(**kwargs):
+                          for key, value in kwargs.items():
+                              print('%s = %s' % (key, value))
+                      
+                      my_func(goose='gosling', kangaroo='joey')
+                      ```
+                      ```text
+                      >>>
+                      kangaroo = joey
+                      goose = gosling
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def my_func(**kwargs):
+                          for key, value in kwargs.items():
+                              print(f'{key} = {value}')
+                      
+                      my_func(goose='gosling', kangaroo='joey')
+                      ```
+                      ```text
+                      >>>
+                      goose = gosling
+                      kangaroo = joe
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # Python 3.5
+                      class MyClass:
+                          def __init__(self):
+                              self.alligator = 'hatchling'
+                              self.elephant = 'calf'
+                      a = MyClass()
+                      for key, value in a.__dict__.items():
+                          print('%s = %s' % (key, value))
+                      ```
+                      ```text
+                      >>>
+                      elephant = calf
+                      alligator = hatchling
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      class MyClass:
+                          def __init__(self):
+                              self.alligator = 'hatchling'
+                              self.elephant = 'calf'
+                      a = MyClass()
+                      for key, value in a.__dict__.items():
+                          print(f'{key} = {value}')
+                      ```
+                      ```text
+                      >>>
+                      alligator = hatchling
+                      elephant = calf
+                      ```
+                    </textarea>
+                  </section>
+                  <section>If you need to handle a high rate of key insertions and popitem calls (e.g., to implement a least-recently-used cache), <b style="color:gold">OrderedDict</b> may still be a better fit than the standard Python <b style="color:gold">dict</b> type</section>
+                  <section>Python makes it easy to define objects that act like dictionaries but that aren’t <b style="color:gold">dict</b> instances. For these types, you can’t assume that insertion ordering will be preserved.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      votes = {
+                          'otter': 1281,
+                          'polar bear': 587,
+                          'fox': 863,
+                      }
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def populate_ranks(votes, ranks):
+                          names = list(votes.keys())
+                          names.sort(key=votes.get, reverse=True)
+                          for i, name in enumerate(names, 1):
+                              ranks[name] = i
+
+                      def get_winner(ranks):
+                          return next(iter(ranks))
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      ranks = {}
+                      populate_ranks(votes, ranks)
+                      print(ranks)
+                      winner = get_winner(ranks)
+                      print(winner)
+                      ```
+                      ```text
+                      >>>
+                      {'otter': 1, 'fox': 2, 'polar bear': 3}
+                      otter
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      from collections.abc import MutableMapping
+  
+                      class SortedDict(MutableMapping):
+                          def __init__(self):
+                              self.data = {}
+                      
+                          def __getitem__(self, key):
+                              return self.data[key]
+                          def __setitem__(self, key, value):
+                              self.data[key] = value
+                      
+                          def __delitem__(self, key):
+                              del self.data[key]
+                          def __iter__(self):
+                              keys = list(self.data.keys())
+                              keys.sort()
+                              for key in keys:
+                                  yield key
+                          def __len__(self):
+                                return len(self.data)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      sorted_ranks = SortedDict()
+                      populate_ranks(votes, sorted_ranks)
+                      print(sorted_ranks.data)
+                      winner = get_winner(sorted_ranks)
+                      print(winner)
+                      ```
+                      ```text
+                      >>>
+                      {'otter': 1, 'fox': 2, 'polar bear': 3}
+                      fox
+                      ```
+                    </textarea>
+                  </section>
+                  <section>First solution - write code that doesn’t rely on insertion ordering.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def get_winner(ranks):
+                          for name, rank in ranks.items():
+                              if rank == 1:
+                                  return name
+                      
+                      winner = get_winner(sorted_ranks)
+                      print(winner)
+                      ```
+                      ```text
+                      >>>
+                      otter
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Second solution - explicitly check for the <b style="color:gold">dict</b> type at runtime.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def get_winner(ranks):
+                          if not isinstance(ranks, dict):
+                              raise TypeError('must provide a dict instance')
+                          return next(iter(ranks))
+                      
+                      get_winner(sorted_ranks)
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      TypeError: must provide a dict instance
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Third solution - require <b style="color:gold">dict</b> values using type annotations and static analysis.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      from typing import Dict, MutableMapping
+
+                      def populate_ranks(votes: Dict[str, int],
+                                         ranks: Dict[str, int]) -> None:
+                          names = list(votes.keys())
+                          names.sort(key=votes.get, reverse=True)
+                          for i, name in enumerate(names, 1):
+                              ranks[name] = i
+                      
+                      def get_winner(ranks: Dict[str, int]) -> str:
+                          return next(iter(ranks))
+                      class SortedDict(MutableMapping[str, int]):
+                          ...
+                      
+                      votes = {
+                          'otter': 1281,
+                          'polar bear': 587,
+                          'fox': 863,
+                      }
+                      sorted_ranks = SortedDict()
+                      populate_ranks(votes, sorted_ranks)
+                      print(sorted_ranks.data)
+                      winner = get_winner(sorted_ranks)
+                      print(winner)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```bash
+                      $ python3 -m mypy --strict example.py
+                      .../example.py:48: error: Argument 2 to "populate_ranks" has
+                      ➥incompatible type "SortedDict"; expected "Dict[str, int]"
+                      .../example.py:50: error: Argument 1 to "get_winner" has
+                      ➥incompatible type "SortedDict"; expected "Dict[str, int]"
+                      ```
+                    </textarea>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 16</section>
+                  <section>Prefer <b style="color:green">get</b> Over <b style="color:green">in</b> and <b style="color:red">KeyError</b> to Handle Missing Dictionary Keys</section>
+                  <section>
+                    <p align="left">The three fundamental operations for interacting with dictionaries:</p>
+                    <ul >
+                      <li>accessing</li>
+                      <li>assigning</li>
+                      <li>deleting </li>
+                    </ul>
+                  </section>
+                  <section>
+                    <p align="left">There are four common ways to detect and handle missing keys in dictionaries:</p>
+                    <ul >
+                      <li>using in expressions</li>
+                      <li>KeyError exceptions</li>
+                      <li>the get method</li>
+                      <li>the setdefault method</li>
+                    </ul>
+                  </section>
+                  <section>Examples</section>
+                  <section data-markdown>
+                     <textarea data-template>
+                       ```python
+                       counters = {
+                           'pumpernickel': 2,
+                           'sourdough': 1,
+                       }
+                       ```
+                     </textarea>
+                  </section>
+                  <section>using <b style="color:green">in</b> expressions</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      key = 'wheat'
+
+                      if key in counters:
+                          count = counters[key]
+                      else:
+                          count = 0
+                      
+                      counters[key] = count + 1
+                      ```
+                    </textarea>
+                  </section>
+                  <section>with <b style="color:green">KeyError</b> exceptions</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      try:
+                          count = counters[key]
+                      except KeyError:
+                          count = 0
+                      
+                      counters[key] = count + 1
+                      ```
+                    </textarea>
+                  </section>
+                  <section>the <b style="color:green">get</b> method</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      count = counters.get(key, 0)
+                      counters[key] = count + 1
+                      ```
+                    </textarea>
+                  </section>
+                  <section>It’s possible to shorten the <b style="color:green">in</b> expression and <b style="color:red">KeyError</b> approaches in various ways, but using the <b style="color:green">get</b> method is the shortest and clearest option.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      if key not in counters:
+                          counters[key] = 0
+                      counters[key] += 1
+                      
+                      if key in counters:
+                          counters[key] += 1
+                      else:
+                          counters[key] = 1
+                      
+                      try:
+                          counters[key] += 1
+                      except KeyError:
+                          counters[key] = 1
+                      ```
+                    </textarea>
+                  </section>
+                  <section><b style="color:green">Off topic</b>: if you’re maintaining dictionaries of counters like this, it’s worth considering the Counter class from the collections built-in module</section>
+                  <section>What if the values of the dictionary are a more complex type, like a list? Let's try solve it with an <b style="color:green">in</b> expression.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      votes = {
+                          'baguette': ['Bob', 'Alice'],
+                          'ciabatta': ['Coco', 'Deb'],
+                      }
+                      key = 'brioche'
+                      who = 'Elmer'
+                      
+                      if key in votes:
+                          names = votes[key]
+                      else:
+                          votes[key] = names = []
+                      
+                      names.append(who)
+                      print(votes)
+                      ```
+                      ```text
+                      >>>
+                      {'baguette': ['Bob', 'Alice'],
+                       'ciabatta': ['Coco', 'Deb'],
+                       'brioche': ['Elmer']}
+                      ```
+                    </textarea>
+                  </section>
+                  <section>with <b style="color:green">KeyError</b> exceptions</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      try:
+                          names = votes[key]
+                      except KeyError:
+                          votes[key] = names = []
+                      
+                      names.append(who)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Similarly, with the <b style="color:green">get</b> method</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      names = votes.get(key)
+                      if names is None:
+                          votes[key] = names = []
+                      
+                      names.append(who)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Shorten further by combining <b style="color:green">get</b> and an assignment expression.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      if (names := votes.get(key)) is None:
+                          votes[key] = names = []
+                      
+                      names.append(who)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>the <b style="color:green">setdefault</b> method to help shorten this pattern even further.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      names = votes.setdefault(key, [])
+                      names.append(who)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>There is one important gotcha: The default value passed to <b style="color:green">setdefault</b> is assigned directly into the dictionary </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      data = {}
+                      key = 'foo'
+                      value = []
+                      data.setdefault(key, value)
+                      print('Before:', data)
+                      value.append('hello')
+                      print('After: ', data)
+                      ```
+                      ```text
+                      >>>
+                      Before: {'foo': []}
+                      After: {'foo': ['hello']}
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Going back to the example at the beignning of this item and use <b style="color:green">setdefault</b>.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      count = counters.setdefault(key, 0)
+                      counters[key] = count + 1
+                      ```
+                    </textarea>
+                  </section>
+                  <section>There are only a few circumstances in which using <b style="color:green">setdefault</b> is the shortest way to handle missing dictionary keys, such as when the default values are cheap to construct, mutable, and there’s no potential for raising exceptions</section>
+                  <section>When the <b style="color:green">setdefault</b> method of dict seems like the best fit for your problem, you should consider using <b style="color:gold">defaultdict</b> instead.</section>
+
+                </section>
+                <section>
+                  <section>Item 17</section>
+                  <section>Prefer <b style="color:green">defaultdict</b> Over <b style="color:green">setdefault</b> to Handle Missing Items in Internal State</section>
+                  <section>
+                    <p align="left">Review</p>
+                    <ul >
+                      <li>the <b style="color:green">get</b> method is a better approach than using <b style="color:green">in</b> expressions and <b style="color:green">KeyError</b> exceptions</li>
+                      <li><b style="color:green">setdefault</b> appears to be the shortest option in some cases</li>
+                      <li>There are some issues associated with using <b style="color:green">setdefault</b></li>
+                    </ul>
+                  </section>
+                  <section>Examples</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      visits = {
+                        'Mexico': {'Tulum', 'Puerto Vallarta'},
+                        'Japan': {'Hakone'},
+                      }
+
+                      visits.setdefault('France', set()).add('Arles') # Short
+
+                      if (japan := visits.get('Japan')) is None:      # Long
+                          visits['Japan'] = japan = set()
+                      japan.add('Kyoto')
+                      
+                      print(visits)
+                      ```
+                      ```text
+                      >>>
+                      {'Mexico': {'Tulum', 'Puerto Vallarta'},
+                       'Japan': {'Kyoto', 'Hakone'},
+                       'France': {'Arles'}}
+                      ```
+                    </textarea>
+                  </section>
+                  <section>What about the situation when you do control creation of the dictionary being accessed?</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      class Visits:
+                          def __init__(self):
+                              self.data = {}
+                          
+                          def add(self, country, city):
+                              city_set = self.data.setdefault(country, set())
+                              city_set.add(city)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      visits = Visits()
+                      visits.add('Russia', 'Yekaterinburg')
+                      visits.add('Tanzania', 'Zanzibar')
+                      print(visits.data)
+                      ```
+                      ```text
+                      >>>
+                      {'Russia': {'Yekaterinburg'}, 'Tanzania': {'Zanzibar'}}
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      from collections import defaultdict
+
+                      class Visits:
+                          def __init__(self):
+                             self.data = defaultdict(set)
+                      
+                          def add(self, country, city):
+                             self.data[country].add(city)
+                      
+                      visits = Visits()
+                      visits.add('England', 'Bath')
+                      visits.add('England', 'London')
+                      print(visits.data)
+                      ```
+                      ```text
+                      >>>
+                      defaultdict(<class 'set'>, {'England': {'London', 'Bath'}})
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Things to Remember</p>
+                    <ul >
+                      <li>If you’re creating a dictionary to manage an arbitrary set of potential keys, then you should prefer using a <b style="color:green">defaultdict</b> instance from the <b style="color:green">collections</b> built-in module</li>
+                      <li>If a dictionary of arbitrary keys is passed to you, and you don’t control its creation, then you should prefer the <b style="color:green">get</b> method to access its items. However, it’s worth considering using the <b style="color:green">setdefault</b> method for the few situations in which it leads to shorter code.</li>
+                    </ul>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 18</section>
+                  <section>Know How to Construct Key-Dependent Default Values with <b style="color:green">__missing__</b></section>
+                  <section>
+                    <p align="left">Review</p>
+                    <ul >
+                      <li>The built-in dict type’s <b style="color:green">setdefault</b> method results in shorter code when handling missing keys in some specific circumstances. </li>
+                      <li>In most cases, <b style="color:green">defaultdict</b> type from the <b style="color:green">collections</b> built-in module is the better choice.</li>
+                      <li>However, there are times when neither <b style="color:green">setdefault</b> nor <b style="color:green">defaultdict</b> is the right fit.</li>
+                    </ul>
+                  </section>
+                  <section>Examples</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      pictures = {}
+                      path = 'profile_1234.png'
+                      
+                      if (handle := pictures.get(path)) is None:
+                          try:
+                              handle = open(path, 'a+b')
+                          except OSError:
+                              print(f'Failed to open path {path}')
+                              raise
+                          else:
+                              pictures[path] = handle
+                      
+                      handle.seek(0)
+                      image_data = handle.read()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      try:
+                          handle = pictures.setdefault(path, open(path, 'a+b'))
+                      except OSError:
+                          print(f'Failed to open path {path}')
+                          raise
+                      else:
+                          handle.seek(0)
+                          image_data = handle.read()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      from collections import defaultdict
+
+                      def open_picture(profile_path):
+                          try:
+                              return open(profile_path, 'a+b')
+                          except OSError:
+                              print(f'Failed to open path {profile_path}')
+                              raise
+                      
+                      pictures = defaultdict(open_picture)
+                      handle = pictures[path]
+                      handle.seek(0)
+                      image_data = handle.read()
+                      ```
+                      ```text
+                      Traceback ...
+                      TypeError: open_picture() missing 1 required positional
+                      argument: 'profile_path'
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      class Pictures(dict):
+                          def __missing__(self, key):
+                              value = open_picture(key)
+                              self[key] = value
+                              return value
+                      
+                      pictures = Pictures()
+                      handle = pictures[path]
+                      handle.seek(0)
+                      image_data = handle.read()
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Conclusion</p>
+                    <ul >
+                      <li>The <b style="color:green">setdefault</b> method of <b style="color:green">dict</b> is a bad fit when creating the default value has high computational cost or may raise exceptions.</li>
+                      <li>The function passed to <b style="color:green">defaultdict</b> must not require any arguments, which makes it impossible to have the default value depend on the key being accessed.</li>
+                      <li>You can define your own <b style="color:green">dict</b> subclass with a <b style="color:green">__missing__</b> method in order to construct default values that must know which key was being accessed.</li>
+                    </ul>
+                  </section>
+                  
+                </section>
+                <section>
+                  <section>Item 19</section>
+                  <section>Never Unpack More Than Three Variables When Functions Return Multiple Values</section>
+                  <section>Unpacking syntax allows Python functions to seemingly return more than one value.</section>
+                  <section>For example ...</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def get_stats(numbers):
+                          minimum = min(numbers)
+                          maximum = max(numbers)
+                          return minimum, maximum
+                      
+                      lengths = [63, 73, 72, 60, 67, 66, 71, 61, 72, 70]
+                      
+                      minimum, maximum = get_stats(lengths) # Two return values
+                      
+                      print(f'Min: {minimum}, Max: {maximum}')
+                      ```
+                      ```text
+                      >>>
+                      Min: 60, Max: 73
+                      ```
+                    </textarea>
+                  </section>
+                  <section>The way this works is that multiple values are returned together in a two-item <b style="color:green">tuple</b>. The calling code then unpacks the returned <b style="color:green">tuple</b> by assigning two variables. </section>
+                  <section>Even simpler example ...</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      first, second = 1, 2
+                      assert first == 1
+                      assert second == 2
+                      
+                      def my_function():
+                          return 1, 2
+                      
+                      first, second = my_function()
+                      assert first == 1
+                      assert second == 2
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Multiple return values can also be received by starred expressions for catch-all unpacking</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def get_avg_ratio(numbers):
+                          average = sum(numbers) / len(numbers)
+                          scaled = [x / average for x in numbers]
+                          scaled.sort(reverse=True)
+                          return scaled
+                      
+                      longest, *middle, shortest = get_avg_ratio(lengths)
+                      
+                      print(f'Longest: {longest:>4.0%}')
+                      print(f'Shortest: {shortest:>4.0%}')
+                      ```
+                      ```text
+                      >>>
+                      Longest:  108%
+                      Shortest:  89%
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Now, imagine that we are going crazy on this feature ...</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def get_stats(numbers):
+                          minimum = min(numbers)
+                          maximum = max(numbers)
+                          count = len(numbers)
+                          average = sum(numbers) / count
+                      
+                          sorted_numbers = sorted(numbers)
+                          middle = count // 2
+                          if count % 2 == 0:
+                              lower = sorted_numbers[middle - 1]
+                              upper = sorted_numbers[middle]
+                              median = (lower + upper) / 2
+                          else:
+                              median = sorted_numbers[middle]
+                      
+                          return minimum, maximum, average, median, count
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      minimum, maximum, average, median, count = get_stats(lengths)
+
+                      print(f'Min: {minimum}, Max: {maximum}')
+                      print(f'Average: {average}, Median: {median}, Count {count}')
+                      ```
+                      ```text
+                      >>>
+                      Min: 60, Max: 73
+                      Average: 67.5, Median: 68.5, Count 10
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Two problems with example above.</p>
+                    <ul >
+                      <li>it is all too easy to reorder the return values accidentally </li>
+                      <li>the line that calls the function and unpacks the values is long</li>
+                    </ul>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # it is all too easy to reorder the return values accidentally
+
+                      # Correct:
+                      minimum, maximum, average, median, count = get_stats(lengths)
+                      
+                      # Oops! Median and average swapped:
+                      minimum, maximum, median, average, count = get_stats(lengths)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # the line that calls the function and unpacks the values is long - bad readability
+
+                      minimum, maximum, average, median, count = get_stats(
+                          lengths)
+                      
+                      minimum, maximum, average, median, count = \
+                          get_stats(lengths)
+                      
+                      (minimum, maximum, average,
+                       median, count) = get_stats(lengths)
+                      
+                      (minimum, maximum, average, median, count
+                          ) = get_stats(lengths)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Summary</p>
+                    <ul >
+                      <li>You can have functions return multiple values by putting them in a <b style="color:green">tuple</b> and having the caller take advantage of Python’s unpacking syntax.</li>
+                      <li>Multiple return values from a function can also be unpacked by catch-all starred expressions.</li>
+                      <li>Unpacking into four or more variables is error prone and should be avoided; instead, return a small class or <b style="color:green">namedtuple</b> instance.</li>
+                    </ul>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 20</section>
+                  <section>Prefer Raising Exceptions to Returning <b style="color:green">None</b></section>
+                  <section>It seems to make sense to return <b style="color:green">None</b> in many cases.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def careful_divide(a, b):
+                          try:
+                              return a / b
+                          except ZeroDivisionError:
+                              return None
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      x, y = 1, 0
+                      result = careful_divide(x, y)
+                      if result is None:
+                          print('Invalid inputs')
+                      ```
+                    </textarea>
+                  </section>
+                  <section>However, if we changed the <b style="color:green">if</b> statement a bit, then we may have an issue.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      x, y = 0, 5
+                      result = careful_divide(x, y)
+                      if not result:
+                            print('Invalid inputs') # This runs! But shouldn't
+                      ```
+                      ```text
+                      >>>
+                      Invalid inputs
+                      ```
+                    </textarea>
+                  </section>
+                  <section>This misinterpretation of a <b style="color:rgb(81, 0, 128)">False</b>-equivalent return value is a common mistake in Python code when <b style="color:green">None</b> has special meaning</section>
+                  <section>
+                    <p align="left">There are two ways to reduce the chance of such errors.</p>
+                    <ul >
+                      <li>Split the return value into a two-tuple</li>
+                      <li>Never return None for special cases</li>
+                    </ul>
+                  </section>
+                  <section>Split the return value into a two-tuple</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def careful_divide(a, b):
+                          try:
+                              return True, a / b
+                          except ZeroDivisionError:
+                              return False, None
+
+                      success, result = careful_divide(x, y)
+                      if not success:
+                          print('Invalid inputs')
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # However, callers can easily ignore the first part of the type.
+                      _, result = careful_divide(x, y)
+                      if not result:
+                          print('Invalid inputs')
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Never return <b style="color:green">None</b> for special cases</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def careful_divide(a, b):
+                          try:
+                              return a / b
+                          except ZeroDivisionError as e:
+                              raise ValueError('Invalid inputs')
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      x, y = 5, 2
+                      try:
+                          result = careful_divide(x, y)
+                      except ValueError:
+                          print('Invalid inputs')
+                      else:
+                          print('Result is %.1f' % result)
+                      ```
+                      ```text
+                      >>>
+                      Result is 2.5
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Document the exception-raising behavior</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def careful_divide(a: float, b: float) -> float:
+                          """Divides a by b.
+                      
+                          Raises:
+                              ValueError: When the inputs cannot be divided.
+                          """
+                      
+                          try:
+                              return a / b
+                          except ZeroDivisionError as e:
+                              raise ValueError('Invalid inputs')
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Summary</p>
+                    <ul >
+                      <li>Functions that return <b style="color:green">None</b> to indicate special meaning are error prone.</li>
+                      <li>Raise exceptions to indicate special situations instead of returning <b style="color:green">None</b>. Document this behavior.</li>
+                      <li>Type annotations can be used to make it clear that a function will never return the value <b style="color:green">None</b>, even in special situations.</li>
+                    </ul>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 21</section>
+                  <section>Know How <b style="color:rgb(128, 0, 100)">Closures</b> Interact with Variable Scope</section>
+                  <section>Closures are functions that refer to variables from the scope in which they were defined</section>
+                  <section>A simple use case of the closure</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def sort_priority(values, group):
+                          def helper(x):
+                              if x in group:
+                                  return (0, x)
+                              return (1, x)
+                          values.sort(key=helper)
+
+                      numbers = [8, 3, 1, 2, 5, 4, 7, 6]
+                      group = {2, 3, 5, 7}
+                      sort_priority(numbers, group)
+                      print(numbers)
+                      ```
+                      ```text
+                      >>>
+                      [2, 3, 5, 7, 1, 4, 6, 8]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Why it works?</p>
+                    <ul >
+                      <li>Python supports closures</li>
+                      <li>Functions are first-class objects in Python</li>
+                      <li>Python has specific rules for comparing sequences.</li>
+                    </ul>
+                  </section>
+                  <section>Some pitfalls of closures for beginners.</section>
+                  <section>For example, adding a flag to signal higher-priority items were seen in the previous example.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def sort_priority2(numbers, group):
+                          found = False
+                          def helper(x):
+                              if x in group:
+                                  found = True # Seems simple
+                                  return (0, x)
+                              return (1, x)
+                          numbers.sort(key=helper)
+                          return found
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      found = sort_priority2(numbers, group)
+                      print('Found:', found)
+                      print(numbers)
+                      ```
+                      ```text
+                      >>>
+                      Found: False
+                      [2, 3, 5, 7, 1, 4, 6, 8]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">The Python interpreter traverses the scope to resolve the reference in this order (see first example in Appendix</p>
+                    <ul >
+                      <li>The current function’s scope.</li>
+                      <li>Any enclosing scopes (such as other containing functions).</li>
+                      <li>The scope of the module that contains the code (also called the global scope).</li>
+                      <li>The built-in scope (that contains functions like len and str).</li>
+                    </ul>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      #If none of these places has defined a variable with  
+                      #the referenced name, then a NameError exception is raised:
+                      foo = does_not_exist * 5
+
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      NameError: name 'does_not_exist' is not defined
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Assigning a value to a variable works differently. (see second example in Appendix)</p>
+                    <ul >
+                      <li>If the variable is already defined in the current scope, it will just take on the new value. </li>
+                      <li>If the variable doesn’t exist in the current scope, Python treats the assignment as a variable definition.</li>
+                    </ul>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def sort_priority2(numbers, group):
+                          found = False        # Scope: 'sort_priority2'
+                          def helper(x):
+                              if x in group:
+                                  found = True # Scope: 'helper' -- Bad!
+                                  return (0, x)
+                              return (1, x)
+                      
+                          numbers.sort(key=helper)
+                          return found
+                      ```
+                    </textarea>
+                  </section>
+                  <section>This behavior prevents local variables in a function from polluting the containing module.</section>
+                  <section> The use of <b style="color:green">nonlocal</b></section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def sort_priority3(numbers, group):
+                          found = False
+                          def helper(x):
+                              nonlocal found # Added
+                              if x in group:
+                                  found = True
+                                  return (0, x)
+                              return (1, x)
+                          numbers.sort(key=helper)
+                          return found
+                      ```
+                    </textarea>
+                  </section>
+                  <section>When your usage of nonlocal starts getting complicated, it’s better to wrap your state in a helper class and create a stateful closure.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      class Sorter:
+                          def __init__(self, group):
+                      
+                              self.group = group
+                              self.found = False
+                      
+                          def __call__(self, x):
+                              if x in self.group:
+                                  self.found = True
+                                  return (0, x)
+                          return (1, x)
+                      
+                      sorter = Sorter(group)
+                      numbers.sort(key=sorter)
+                      assert sorter.found is True
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Things to Remember</p>
+                    <ul >
+                      <li>Closure functions can refer to variables from any of the scopes in which they were defined.</li>
+                      <li>By default, closures can’t affect enclosing scopes by assigning variables.</li>
+                      <li>Use the <b style="color:green">nonlocal</b> statement to indicate when a closure can modify a variable in its enclosing scopes.</li>
+                      <li>Avoid using <b style="color:green">nonlocal</b> statements for anything beyond simple functions.</li>
+                    </ul>
+                  </section>
+                  <section>Appendix</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      meep = 25
+                      def enclosing():
+                          foo = 15
+                          def my_func():
+                              bar = 10
+                              print(bar)   # current function scope
+                              print(foo)   # enclosing scope
+                              print(meep)  # module scope
+                              print(str)   # built-in scope
+                              print(does_not_exist)
+                      
+                          my_func()
+
+                      enclosing()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      meep = 25
+                      def enclosing():
+                          foo = 15
+                          foo = 25
+                      
+                          def my_func():
+                              foo = 10
+                              bar = 5
+                              print(foo)  # current function scope
+                              print(bar)  # current function scope
+                      
+                          my_func()
+                          print(foo)  # enclosing scope
+                          print(bar)  # enclosing scope
+                          
+                      enclosing()
+                      ```
+                    </textarea>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 22</section>
+                  <section>Reduce Visual Noise with Variable Positional Arguments</section>
+                  <section>Positional arguments are often called varargs for short, or star args (<b style="color:green">*args</b>)</section>
+                  <section>Example</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def log(message, values):
+                          if not values:
+                              print(message)
+                          else:
+                              values_str = ', '.join(str(x) for x in values)
+                              print(f'{message}: {values_str}')
+                      
+                      log('My numbers are', [1, 2])
+                      log('Hi there', [])
+                      ```
+                      ```text
+                      >>>
+                      My numbers are: 1, 2
+                      Hi there
+                      ```
+                    </textarea>
+                  </section>
+                  <section>To reduce visual noise, it would be better to leave out the second argument entirely when it is empty.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def log(message, *values): # The only difference
+                          if not values:
+                             print(message)
+                          else:
+                              values_str = ', '.join(str(x) for x in values)
+                             print(f'{message}: {values_str}')
+                      
+                      log('My numbers are', 1, 2)
+                      log('Hi there') # Much better
+                      ```
+                      ```text
+                      >>>
+                      My numbers are: 1, 2
+                      Hi there
+                      ```
+                    </textarea>
+                  </section>
+                  <section><b style="color:rgb(0, 34, 128)">Fun fact: </b> this syntax works very similarly to the starred expressions used in unpacking assignment statements</section>
+                  <section>You can use the items from a sequence as the positional arguments for a function with the <b style="color:green">*</b> operator.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      favorites = [7, 33, 99]
+                      log('Favorite colors', *favorites)
+                      ```
+                      ```text
+                      >>>
+                      Favorite colors: 7, 33, 99
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Two problems with accepting a variable number of positional arguments.</p>
+                    <ul >
+                      <li>Using the <b style="color:green">*</b> operator with a generator may cause a program to run out of memory and crash.</li>
+                      <li>Adding new positional parameters to functions that accept <b style="color:green">*args</b> can introduce hard-to-detect bugs.</li>
+                    </ul>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def my_generator():
+                          for i in range(10):
+                              yield i
+                      
+                      def my_func(*args):
+                         print(args)
+                      
+                      it = my_generator()
+                      my_func(*it) # imagine a number much bigger 
+                                   # than 10 and causing a crash.
+                      ```
+                      ```text
+                      >>>
+                      (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # Add `sequence` as the 1st argument
+                      def log(sequence, message, *values): 
+                          if not values:
+                             print(f'{sequence} - {message}')
+                          else:
+                              values_str = ', '.join(str(x) for x in values)
+                              print(f'{sequence} - {message}: {values_str}')
+                      
+                      log(1, 'Favorites', 7, 33)      # New with *args OK
+                      log(1, 'Hi there')              # New message only OK
+                      log('Favorite numbers', 7, 33)  # Old usage breaks
+                      ```
+                      ```text
+                      >>>
+                      1 - Favorites: 7, 33
+                      1 - Hi there
+                      Favorite numbers  - 7: 33
+                      ```
+                    </textarea>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 23</section>
+                  <section>Provide Optional Behavior with Keyword Arguments</section>
+                  <section>Function arguments can be specified by position or by keyword.</section>
+                  <section>Example</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def remainder(number, divisor):
+                          return number % divisor
+                      
+                      assert remainder(20, 7) == 6
+
+                      # All normal arguments to Python functions 
+                      # can also be passed by keyword. You can even
+                      # mix and Matches
+
+                      remainder(20, 7)
+                      remainder(20, divisor=7)
+                      remainder(number=20, divisor=7)
+                      remainder(divisor=7, number=20)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Positional arguments must be specified before keyword arguments</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      remainder(number=20, 7)
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      SyntaxError: positional argument follows keyword argument
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Each argument can be specified only once</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      remainder(20, number=7)
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      TypeError: remainder() got multiple values for argument
+                      ➥ 'number'
+                      ```
+                    </textarea>
+                  </section>
+                  <section> Unpacking Dictionaries with <b style="color:green">**</b></section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      my_kwargs = {
+                          'number': 20,
+                          'divisor': 7,
+                      }
+                      assert remainder(**my_kwargs) == 6
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Combine <b style="color:green">**</b> with a regular keyword argument</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      my_kwargs = {
+                          'divisor': 7,
+                      }
+                      assert remainder(number=20, **my_kwargs) == 6
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Use <b style="color:green">**</b> multipe times</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      my_kwargs = {
+                          'number': 20,
+                      }
+                      other_kwargs = {
+                          'divisor': 7,
+                      }
+                      assert remainder(**my_kwargs, **other_kwargs) == 6
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Define a function to receive any named keyword argument using <b style="color:green">**kwargs</b></section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def print_parameters(**kwargs):
+                          for key, value in kwargs.items():
+                              print(f'{key} = {value}')
+                      
+                      print_parameters(alpha=1.5, beta=9, gamma=4)
+                      ```
+                      ```text
+                      >>>
+                      alpha = 1.5
+                      beta = 9
+                      gamma = 4
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Keyword arguments provides three significant benefits.</p>
+                    <ul >
+                      <li>Make the function call clearer to new readers of the code.</li>
+                      <li>Can have default values specified in the function definition.</li>
+                      <li>Extend a function’s parameters while remaining backward compatible with existing callers.</li>
+                    </ul>
+                  </section>
+                  <section>We saw the first benefit in the previous example.</section>
+                  <section>Look at the second benefit with an example. <p>Let's start with ...</p></section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def flow_rate(weight_diff, time_diff):
+                          return weight_diff / time_diff
+                      
+                      weight_diff = 0.5
+                      time_diff = 3
+                      flow = flow_rate(weight_diff, time_diff)
+                      print(f'{flow:.3} kg per second')
+                      ```
+                      ```text
+                      >>>
+                      0.167 kg per second
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # adding an argument for the time period scaling factor
+                      def flow_rate(weight_diff, time_diff, period):
+                          return (weight_diff / time_diff) * period
+
+                      # period is a required argument
+                      flow_per_second = flow_rate(weight_diff, time_diff, 1)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # make period optional
+                      def flow_rate(weight_diff, time_diff, period=1):
+                          return (weight_diff / time_diff) * period
+
+                      flow_per_second = flow_rate(weight_diff, time_diff)
+                      flow_per_hour = flow_rate(weight_diff, time_diff, period=3600)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Example for the third benefit ...</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # extend the function above to calculate 
+                      # flow rates in weight units besides kilograms.
+                      def flow_rate(weight_diff, time_diff,
+                                    period=1, units_per_kg=1):
+                          return ((weight_diff * units_per_kg) / time_diff) * period
+
+                      # calculate flow rate in lbs
+                      pounds_per_hour = flow_rate(weight_diff, time_diff,
+                                                  period=3600, units_per_kg=2.2)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Optional keyword arguments should always be passed by keyword instead of by position.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      #  it isn’t clear what the values 3600 and 2.2 correspond to.
+                      pounds_per_hour = flow_rate(weight_diff, time_diff, 3600, 2.2)
+                      ```
+                    </textarea>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 24</section>
+                  <section>Use <b style="color:green">None</b> and Docstrings to Specify Dynamic Default Arguments</section>
+                  <section>A default argument value is evaluated only once: during function definition at module load time. This can cause odd behaviors for dynamic values (like {}, [], or datetime.now()).</section>
+                  <section>An Example with the Problem</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      from time import sleep
+                      from datetime import datetime
+                      
+                      def log(message, when=datetime.now()):
+                          print(f'{when}: {message}')
+                      
+                      log('Hi there!')
+                      sleep(0.1)
+                      log('Hello again!')
+                      ```
+                      ```text
+                      >>>
+                      2019-07-06 14:06:15.120124: Hi there!
+                      2019-07-06 14:06:15.120124: Hello again!
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Solution</section>
+                  <section>Use <b style="color:green">None</b> as the default value for any keyword argument that has a dynamic value. Document the actual default behavior in the function’s docstring.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def log(message, when=None):
+                          """Log a message with a timestamp.
+                      
+                          Args:
+                              message: Message to print.
+                              when: datetime of when the message occurred.
+                                  Defaults to the present time.
+                          """
+                          if when is None:
+                              when = datetime.now()
+                          print(f'{when}: {message}')
+
+                      log('Hi there!')
+                      sleep(0.1)
+                      log('Hello again!')
+                      ```
+                      ```text
+                      >>>
+                      2019-07-06 14:06:15.222419: Hi there!
+                      2019-07-06 14:06:15.322555: Hello again!
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Another Example with the Problem</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      import json
+
+                      def decode(data, default={}):
+                          try:
+                              return json.loads(data)
+                          except ValueError:
+                              return default
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      foo = decode('bad data')
+                      foo['stuff'] = 5
+                      bar = decode('also bad')
+                      bar['meep'] = 1
+                      print('Foo:', foo)
+                      print('Bar:', bar)
+                      assert foo is bar
+                      ```
+                      ```text
+                      >>>
+                      Foo: {'stuff': 5, 'meep': 1}
+                      Bar: {'stuff': 5, 'meep': 1}
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Solution</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def decode(data, default=None):
+                           """Load JSON data from a string.
+                       
+                           Args:
+                                data: JSON data to decode.
+                                default: Value to return if decoding fails.
+                                    Defaults to an empty dictionary.
+                           """
+                           try:
+                                return json.loads(data)
+                           except ValueError:
+                                if default is None:
+                                    default = {}
+                           return default
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      foo = decode('bad data')
+                      foo['stuff'] = 5
+                      bar = decode('also bad')
+                      bar['meep'] = 1
+                      print('Foo:', foo)
+                      print('Bar:', bar)
+                      assert foo is not bar
+                      ```
+                      ```text
+                      >>>
+                      Foo: {'stuff': 5}
+                      Bar: {'meep': 1}
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Using <b style="color:green">None</b> to represent keyword argument default values also works correctly with type annotations.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      from typing import Optional
+
+                      def log_typed(message: str,
+                                    when: Optional[datetime]=None) -> None:
+                          """Log a message with a timestamp.
+                      
+                          Args:
+                              message: Message to print.
+                              when: datetime of when the message occurred.
+                                  Defaults to the present time.
+                          """
+                          if when is None:
+                              when = datetime.now()
+                          print(f'{when}: {message}')
+                      ```
+                    </textarea>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 25</section>
+                  <section>Enforce Clarity with Keyword-Only and Positional-Only Arguments</section>
+                  <section>Keyword-only arguments force callers to supply certain arguments by keyword (instead of by position), which makes the intention of a function call clearer. Keyword-only arguments are defined after a single <b style="color:green">*</b> in the argument list.</section>
+                  <section>Example</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def safe_division(number, divisor,
+                                        ignore_overflow,
+                                        ignore_zero_division):
+                          try:
+                               return number / divisor
+                          except OverflowError:
+                               if ignore_overflow:
+                                    return 0
+                          else:
+                               raise
+                          except ZeroDivisionError:
+                               if ignore_zero_division:
+                                    return float('inf')
+                               else:
+                                    raise
+                      ```
+                    </textarea>
+                  </section>
+                  <section>This call ignores the float overflow from division and returns zero:</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      result = safe_division(1.0, 10**500, True, False)
+                      print(result)
+                      ```
+                      ```text
+                      >>>
+                      0
+                      ```
+                    </textarea>
+                  </section>
+                  <section>This call ignores the error from dividing by zero and returns infinity:</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      result = safe_division(1.0, 0, False, True)
+                      print(result)
+                      ```
+                      ```text
+                      >>>
+                      inf
+                      ```
+                    </textarea>
+                  </section>
+                  <section>More clear if we define our original function signature as follow:</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def safe_division_b(number, divisor,
+                                        ignore_overflow=False,       # Changed
+                                        ignore_zero_division=False): # Changed
+                          try:
+                               return number / divisor
+                          except OverflowError:
+                               if ignore_overflow:
+                                    return 0
+                          else:
+                               raise
+                          except ZeroDivisionError:
+                               if ignore_zero_division:
+                                    return float('inf')
+                               else:
+                                    raise
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      result = safe_division_b(1.0, 10**500, ignore_overflow=True)
+                      print(result)
+                      
+                      result = safe_division_b(1.0, 0, ignore_zero_division=True)
+                      print(result)
+                      ```
+                      ```text
+                      >>>
+                      0
+                      inf
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Caller can still call it the old way with positional arguments</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      assert safe_division_b(1.0, 10**500, True, False) == 0
+                      ```
+                    </textarea>
+                  </section>
+                  <section>The <b style="color:green">*</b> symbol in the argument list indicates the end of positional arguments and the beginning of keyword-only arguments:</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def safe_division_c(number, divisor, *, # Changed
+                                        ignore_overflow=False,       
+                                        ignore_zero_division=False): 
+                          try:
+                               return number / divisor
+                          except OverflowError:
+                               if ignore_overflow:
+                                    return 0
+                          else:
+                               raise
+                          except ZeroDivisionError:
+                               if ignore_zero_division:
+                                    return float('inf')
+                               else:
+                                    raise
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Now, the only correct way to call the function is via the use of keywords</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      safe_division_c(1.0, 10**500, True, False)
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      TypeError: safe_division_c() takes 2 positional arguments but 4
+                      ➥were given
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      result = safe_division_c(1.0, 0, ignore_zero_division=True)
+                      assert result == float('inf')
+                      
+                      try:
+                          result = safe_division_c(1.0, 0)
+                      except ZeroDivisionError:
+                          pass # Expected
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Callers may specify the first two required arguments (number and divisor) with a mix of positions and keywords</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      assert safe_division_c(number=2, divisor=5) == 0.4
+                      assert safe_division_c(divisor=5, number=2) == 0.4
+                      assert safe_division_c(2, divisor=5) == 0.4
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Example: <p><b style="color:purple">number -> numerator</b></p> <p><b style="color:brown">divisor -> denominator</b></p></section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def safe_division_c(numerator, denominator, *, # Changed
+                                        ignore_overflow=False,       
+                                        ignore_zero_division=False): 
+                          try:
+                               return number / divisor
+                          except OverflowError:
+                               if ignore_overflow:
+                                    return 0
+                          else:
+                               raise
+                          except ZeroDivisionError:
+                               if ignore_zero_division:
+                                    return float('inf')
+                               else:
+                                    raise
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      safe_division_c(number=2, divisor=5)
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      TypeError: safe_division_c() got an unexpected keyword argument
+                      ➥'number'
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Python 3.8 introduces <i>positional-only arguments</i> to fix this problem</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def safe_division_d(numerator, denominator, /, *, # Changed
+                                        ignore_overflow=False,       
+                                        ignore_zero_division=False): 
+                          try:
+                               return number / divisor
+                          except OverflowError:
+                               if ignore_overflow:
+                                    return 0
+                          else:
+                               raise
+                          except ZeroDivisionError:
+                               if ignore_zero_division:
+                                    return float('inf')
+                               else:
+                                    raise
+
+                      assert safe_division_d(2, 5) == 0.4
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      safe_division_d(numerator=2, denominator=5)
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      TypeError: safe_division_d() got some positional-only arguments
+                      ➥passed as keyword arguments: 'numerator, denominator'
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Any parameter name between the <b style="color:green">/</b> and <b style="color:green">*</b> symbols in the argument list may be passed either by position or by keyword</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def safe_division_e(numerator, denominator, /,
+                                          ndigits=10, *,               # Changed
+                                          ignore_overflow=False,
+                                          ignore_zero_division=False):
+                          try:
+                              fraction = numerator / denominator       # Changed
+                              return round(fraction, ndigits)          # Changed
+                          except OverflowError:
+                              if ignore_overflow:
+                                  return 0
+                              else:
+                                  raise
+                          except ZeroDivisionError:
+                              if ignore_zero_division:
+                                  return float('inf')
+                              else:
+                                  raise
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      result = safe_division_e(22, 7)
+                      print(result)
+                      
+                      result = safe_division_e(22, 7, 5)
+                      print(result)
+                      
+                      result = safe_division_e(22, 7, ndigits=2)
+                      print(result)
+                      ```
+                      ```text
+                      >>>
+                      3.1428571429
+                      3.14286
+                      3.14
+                      ```
+                    </textarea>
+                  </section>
+                </section>
             </div>
         </div>
 
