@@ -1238,15 +1238,131 @@
                 <section>
                   <section>Item 11</section>
                   <section>Know How to Slice Sequences</section>
+                  <section>The basic form of the slicing syntax is <b style="color:green">somelist</b><b style="color:yellow">[start:end]</b>, where start is inclusive and end is exclusive</section>
                   <section data-markdown>
                      <textarea data-template>
                        ```python
-                       
+                       a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+                       print('Middle two:  ', a[3:5])
+                       print('All but ends:', a[1:7]) 
                        ```
                        ```text
-                       
+                       >>>
+                       Middle two:   ['d', 'e']
+                       All but ends: ['b', 'c', 'd', 'e', 'f', 'g']                   
                        ```
                      </textarea>
+                  </section>
+                  <section>Avoid being verbose when slicing: Don’t supply 0 for the start index or the length of the sequence for the end index.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      assert a[:5] == a[0:5]
+                      assert a[5:] == a[5:len(a)]
+                      ```
+                      ```python
+                      a[:]      # ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+                      a[:5]     # ['a', 'b', 'c', 'd', 'e']
+                      a[:-1]    # ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+                      a[4:]     #                     ['e', 'f', 'g', 'h']
+                      a[-3:]    #                          ['f', 'g', 'h']
+                      a[2:5]    #           ['c', 'd', 'e']
+                      a[2:-1]   #           ['c', 'd', 'e', 'f', 'g']
+                      a[-3:-1]  #                          ['f', 'g']
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Slicing is forgiving of start or end indexes that are out of bounds, which means it’s easy to express slices on the front or back boundaries of a sequence</section>
+                  <section data-markdown>
+                   <textarea data-template>
+                     ```python
+                     first_twenty_items = a[:20]
+                     last_twenty_items = a[-20:]
+                     ```
+                   </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      a[20]
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      IndexError: list index out of range
+                      ```
+                    </textarea>
+                  </section>
+                  <section>The result of slicing a list is a whole new list. References to the objects from the original list are maintained. Modifying the result of slicing won’t affect the original list</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      b = a[3:]
+                      print('Before:   ', b)
+                      b[1] = 99
+                      print('After:    ', b)
+                      print('No change:', a)
+                      ```
+                      ```text
+                      >>>
+                      Before:    ['d', 'e', 'f', 'g', 'h']
+                      After:     ['d', 99, 'f', 'g', 'h']
+                      No change: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Assigning to a list slice replaces that range in the original sequence with what’s referenced even if the lengths are different.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      print('Before ', a)
+                      a[2:7] = [99, 22, 14]
+                      print('After  ', a)
+                      ```
+                      ```text
+                      >>>
+                      Before  ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+                      After   ['a', 'b', 99, 22, 14, 'h']
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      print('Before ', a)
+                      a[2:3] = [47, 11]
+                      print('After  ', a)
+                      ```
+                      ```text
+                      >>>
+                      Before  ['a', 'b', 99, 22, 14, 'h']
+                      After   ['a', 'b', 47, 11, 22, 14, 'h']
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      b = a[:]
+                      assert b == a and b is not a
+                      ```
+                      ```python
+                      b = a
+                      print('Before a', a)
+                      print('Before b', b)
+                      a[:] = [101, 102, 103]
+                      assert a is b             # Still the same list object
+                      print('After a ', a)      # Now has different contents
+                      print('After b ', b)      # Same list, so same contents as a
+                      ```
+                      ```text
+                      >>>
+                      Before a ['a', 'b', 47, 11, 22, 14, 'h']
+                      Before b ['a', 'b', 47, 11, 22, 14, 'h']
+                      After a  [101, 102, 103]
+                      After b  [101, 102, 103]
+                      ```
+                    </textarea>
                   </section>
                   
                 </section>
