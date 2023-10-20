@@ -1018,6 +1018,253 @@
                   </section>
                   <section>Avoid using <u>else</u> blocks after loops because their behavior isn’t intuitive and can be confusing.</section>
                 </section>
+                <section>
+                  <section>Item 10</section>
+                  <section>Prevent Repetition with Assignment Expressions</section>
+                  <section>An assignment expression — also known as the walrus operator (<b style="color:blue"> := </b>)</section>
+                  <section>Assignment expressions use the walrus operator (<b style="color:blue"> := </b>) to both assign and evaluate variable names in a single expression, thus reducing repetition.</section>
+                  <section data-markdown>
+                     <textarea data-template>
+                       ```python
+                       fresh_fruit = {
+                           'apple': 10,
+                           'banana': 8,
+                           'lemon': 5,
+                       }
+                       ```
+                     </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def make_lemonade(count):
+                          ...
+                      def out_of_stock():
+                          ...
+                      
+                      count = fresh_fruit.get('lemon', 0)
+                      if count:
+                          make_lemonade(count)
+                      else:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>  
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      if count := fresh_fruit.get('lemon', 0):
+                          make_lemonade(count)
+                      else:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def make_cider(count):
+                          ...
+                      count = fresh_fruit.get('apple', 0)
+                      if count >= 4:
+                          make_cider(count)
+                      else:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section>When an assignment expression is a subexpression of a larger expression, it must be surrounded with parentheses.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      if (count := fresh_fruit.get('apple', 0)) >= 4:
+                          make_cider(count)
+                      else:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def slice_bananas(count):
+                          ...
+                      
+                      class OutOfBananas(Exception):
+                          pass
+                      
+                      def make_smoothies(count):
+                          ...
+                      
+                      pieces = 0
+                      count = fresh_fruit.get('banana', 0)
+                      if count >= 2:
+                          pieces = slice_bananas(count)
+                      
+                      try:
+                          smoothies = make_smoothies(pieces)
+                      except OutOfBananas:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      count = fresh_fruit.get('banana', 0)
+                      if count >= 2:
+                          pieces = slice_bananas(count)
+                      else:
+                          pieces = 0
+                      
+                      try:
+                          smoothies = make_smoothies(pieces)
+                      except OutOfBananas:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      pieces = 0
+                      if (count := fresh_fruit.get('banana', 0)) >= 2:
+                          pieces = slice_bananas(count)
+                      
+                      try:
+                          smoothies = make_smoothies(pieces)
+                      except OutOfBananas:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      if (count := fresh_fruit.get('banana', 0)) >= 2:
+                          pieces = slice_bananas(count)
+                      else:
+                          pieces = 0
+                      
+                      try:
+                          smoothies = make_smoothies(pieces)
+                      except OutOfBananas:
+                          out_of_stock()
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Although switch/case statements and do/while loops are not available in Python, their functionality can be emulated much more clearly by using assignment expressions.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      count = fresh_fruit.get('banana', 0)
+                      if count >= 2:
+                          pieces = slice_bananas(count)
+                          to_enjoy = make_smoothies(pieces)
+                      else:
+                          count = fresh_fruit.get('apple', 0)
+                          if count >= 4:
+                              to_enjoy = make_cider(count)
+                          else:
+                              count = fresh_fruit.get('lemon', 0)
+                              if count:
+                                 to_enjoy = make_lemonade(count)
+                              else:
+                                 to_enjoy‘= 'Nothing'
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      if (count := fresh_fruit.get('banana', 0)) >= 2:
+                          pieces = slice_bananas(count)
+                          to_enjoy = make_smoothies(pieces)
+                      elif (count := fresh_fruit.get('apple', 0)) >= 4:
+                          to_enjoy = make_cider(count)
+                      elif count := fresh_fruit.get('lemon', 0):
+                          to_enjoy = make_lemonade(count)
+                      else:
+                          to_enjoy = 'Nothing'
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def pick_fruit():
+                          ...
+                      
+                      def make_juice(fruit, count):
+                          ...
+                      
+                      bottles = []
+                      fresh_fruit = pick_fruit()
+                      while fresh_fruit:
+                          for fruit, count in fresh_fruit.items():
+                              batch = make_juice(fruit, count)
+                              bottles.extend(batch)
+                          fresh_fruit = pick_fruit()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      bottles = []
+                      while True:                    # Loop
+                          fresh_fruit = pick_fruit()
+                          if not fresh_fruit:        # And a half
+                              break
+                      
+                          for fruit, count in fresh_fruit.items():
+                              batch = make_juice(fruit, count)
+                              bottles.extend(batch)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      bottles = []
+                      while fresh_fruit := pick_fruit():
+                          for fruit, count in fresh_fruit.items():
+                              batch = make_juice(fruit, count)
+                              bottles.extend(batch)
+                      ```
+                    </textarea>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 11</section>
+                  <section>Know How to Slice Sequences</section>
+                  <section data-markdown>
+                     <textarea data-template>
+                       ```python
+                       
+                       ```
+                       ```text
+                       
+                       ```
+                     </textarea>
+                  </section>
+                  
+                </section>
+                <section>
+                  <section>Item 12</section>
+                  <section>Avoid Striding and Slicing in a Single Expression</section>
+                  <section data-markdown>
+                     <textarea data-template>
+                       ```python
+                       
+                       ```
+                       ```text
+                       
+                       ```
+                     </textarea>
+                  </section>
+                  
+                </section>
             </div>
         </div>
 
