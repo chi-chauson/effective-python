@@ -2484,6 +2484,102 @@
                     </ul>
                   </section>
                 </section>
+                <section>
+                  <section>Item 18</section>
+                  <section>Know How to Construct Key-Dependent Default Values with <b style="color:green">__missing__</b></section>
+                  <section>
+                    <p align="left">Review</p>
+                    <ul >
+                      <li>The built-in dict type’s <b style="color:green">setdefault</b> method results in shorter code when handling missing keys in some specific circumstances. </li>
+                      <li>In most cases, <b style="color:green">defaultdict</b> type from the <b style="color:green">collections</b> built-in module is the better choice.</li>
+                      <li>However, there are times when neither <b style="color:green">setdefault</b> nor <b style="color:green">defaultdict</b> is the right fit.</li>
+                    </ul>
+                  </section>
+                  <section>Examples</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      pictures = {}
+                      path = 'profile_1234.png'
+                      
+                      if (handle := pictures.get(path)) is None:
+                          try:
+                              handle = open(path, 'a+b')
+                          except OSError:
+                              print(f'Failed to open path {path}')
+                              raise
+                          else:
+                              pictures[path] = handle
+                      
+                      handle.seek(0)
+                      image_data = handle.read()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      try:
+                          handle = pictures.setdefault(path, open(path, 'a+b'))
+                      except OSError:
+                          print(f'Failed to open path {path}')
+                          raise
+                      else:
+                          handle.seek(0)
+                          image_data = handle.read()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      from collections import defaultdict
+
+                      def open_picture(profile_path):
+                          try:
+                              return open(profile_path, 'a+b')
+                          except OSError:
+                              print(f'Failed to open path {profile_path}')
+                              raise
+                      
+                      pictures = defaultdict(open_picture)
+                      handle = pictures[path]
+                      handle.seek(0)
+                      image_data = handle.read()
+                      ```
+                      ```text
+                      Traceback ...
+                      TypeError: open_picture() missing 1 required positional
+                      argument: 'profile_path'
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      class Pictures(dict):
+                          def __missing__(self, key):
+                              value = open_picture(key)
+                              self[key] = value
+                              return value
+                      
+                      pictures = Pictures()
+                      handle = pictures[path]
+                      handle.seek(0)
+                      image_data = handle.read()
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Conclusion</p>
+                    <ul >
+                      <li>The <b style="color:green">setdefault</b> method of <b style="color:green">dict</b> is a bad fit when creating the default value has high computational cost or may raise exceptions.</li>
+                      <li>The function passed to <b style="color:green">defaultdict</b> must not require any arguments, which makes it impossible to have the default value depend on the key being accessed.</li>
+                      <li>You can define your own <b style="color:green">dict</b> subclass with a <b style="color:green">__missing__</b> method in order to construct default values that must know which key was being accessed.</li>
+                    </ul>
+                  </section>
+                  
+                </section>
             </div>
         </div>
 
