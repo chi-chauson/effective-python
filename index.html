@@ -2863,21 +2863,163 @@
                 </section>
                 <section>
                   <section>Item 21</section>
-                  <section>Know How Closures Interact with Variable Scope</section>
+                  <section>Know How <b style="color:rgb(128, 0, 100)">Closures</b> Interact with Variable Scope</section>
+                  <section>Closures are functions that refer to variables from the scope in which they were defined</section>
+                  <section>A simple use case of the closure</section>
                   <section data-markdown>
                     <textarea data-template>
                       ```python
+                      def sort_priority(values, group):
+                          def helper(x):
+                              if x in group:
+                                  return (0, x)
+                              return (1, x)
+                          values.sort(key=helper)
+
+                      numbers = [8, 3, 1, 2, 5, 4, 7, 6]
+                      group = {2, 3, 5, 7}
+                      sort_priority(numbers, group)
+                      print(numbers)
                       ```
                       ```text
+                      >>>
+                      [2, 3, 5, 7, 1, 4, 6, 8]
                       ```
                     </textarea>
                   </section>
                   <section>
-                    <p align="left">Summary</p>
+                    <p align="left">Why it works?</p>
                     <ul >
-                      <li></li>
-                      <li></li>
-                      <li></li>
+                      <li>Python supports closures</li>
+                      <li>Functions are first-class objects in Python</li>
+                      <li>Python has specific rules for comparing sequences.</li>
+                    </ul>
+                  </section>
+                  <section>Some pitfalls of closures for beginners.</section>
+                  <section>For example, adding a flag to signal higher-priority items were seen in the previous example.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def sort_priority2(numbers, group):
+                          found = False
+                          def helper(x):
+                              if x in group:
+                                  found = True # Seems simple
+                                  return (0, x)
+                              return (1, x)
+                          numbers.sort(key=helper)
+                          return found
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      found = sort_priority2(numbers, group)
+                      print('Found:', found)
+                      print(numbers)
+                      ```
+                      ```text
+                      >>>
+                      Found: False
+                      [2, 3, 5, 7, 1, 4, 6, 8]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">The Python interpreter traverses the scope to resolve the reference in this order</p>
+                    <ul >
+                      <li>The current function’s scope.</li>
+                      <li>Any enclosing scopes (such as other containing functions).</li>
+                      <li>The scope of the module that contains the code (also called the global scope).</li>
+                      <li>The built-in scope (that contains functions like len and str).</li>
+                    </ul>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      #If none of these places has defined a variable with  
+                      #the referenced name, then a NameError exception is raised:
+                      foo = does_not_exist * 5
+
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      NameError: name 'does_not_exist' is not defined
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Assigning a value to a variable works differently.</p>
+                    <ul >
+                      <li>If the variable is already defined in the current scope, it will just take on the new value. </li>
+                      <li>If the variable doesn’t exist in the current scope, Python treats the assignment as a variable definition.</li>
+                    </ul>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def sort_priority2(numbers, group):
+                          found = False        # Scope: 'sort_priority2'
+                          def helper(x):
+                              if x in group:
+                                  found = True # Scope: 'helper' -- Bad!
+                                  return (0, x)
+                              return (1, x)
+                      
+                          numbers.sort(key=helper)
+                          return found
+                      ```
+                    </textarea>
+                  </section>
+                  <section>This behavior prevents local variables in a function from polluting the containing module.</section>
+                  <section> The use of <b style="color:green">nonlocal</b></section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def sort_priority3(numbers, group):
+                          found = False
+                          def helper(x):
+                              nonlocal found # Added
+                              if x in group:
+                                  found = True
+                                  return (0, x)
+                              return (1, x)
+                          numbers.sort(key=helper)
+                          return found
+                      ```
+                    </textarea>
+                  </section>
+                  <section>When your usage of nonlocal starts getting complicated, it’s better to wrap your state in a helper class and create a stateful closure.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      class Sorter:
+                          def __init__(self, group):
+                      
+                              self.group = group
+                              self.found = False
+                      
+                          def __call__(self, x):
+                              if x in self.group:
+                                  self.found = True
+                                  return (0, x)
+                          return (1, x)
+                      
+                      sorter = Sorter(group)
+                      numbers.sort(key=sorter)
+                      assert sorter.found is True
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Things to Remember</p>
+                    <ul >
+                      <li>Closure functions can refer to variables from any of the scopes in which they were defined.</li>
+                      <li>By default, closures can’t affect enclosing scopes by assigning variables.</li>
+                      <li>Use the <b style="color:green">nonlocal</b> statement to indicate when a closure can modify a variable in its enclosing scopes.</li>
+                      <li>Avoid using <b style="color:green">nonlocal</b> statements for anything beyond simple functions.</li>
                     </ul>
                   </section>
                 </section>
