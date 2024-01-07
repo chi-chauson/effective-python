@@ -3023,6 +3023,117 @@
                     </ul>
                   </section>
                 </section>
+                <section>
+                  <section>Item 22</section>
+                  <section>Reduce Visual Noise with Variable Positional Arguments</section>
+                  <section>Positional arguments are often called varargs for short, or star args (<b style="color:green">*args</b>)</section>
+                  <section>Example</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def log(message, values):
+                          if not values:
+                              print(message)
+                          else:
+                              values_str = ', '.join(str(x) for x in values)
+                              print(f'{message}: {values_str}')
+                      
+                      log('My numbers are', [1, 2])
+                      log('Hi there', [])
+                      ```
+                      ```text
+                      >>>
+                      My numbers are: 1, 2
+                      Hi there
+                      ```
+                    </textarea>
+                  </section>
+                  <section>To reduce visual noise, it would be better to leave out the second argument entirely when it is empty.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def log(message, *values): # The only difference
+                          if not values:
+                             print(message)
+                          else:
+                              values_str = ', '.join(str(x) for x in values)
+                             print(f'{message}: {values_str}')
+                      
+                      log('My numbers are', 1, 2)
+                      log('Hi there') # Much better
+                      ```
+                      ```text
+                      >>>
+                      My numbers are: 1, 2
+                      Hi there
+                      ```
+                    </textarea>
+                  </section>
+                  <section><b style="color:rgb(0, 34, 128)">Fun fact: </b> this syntax works very similarly to the starred expressions used in unpacking assignment statements</section>
+                  <section>You can use the items from a sequence as the positional arguments for a function with the <b style="color:green">*</b> operator.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      favorites = [7, 33, 99]
+                      log('Favorite colors', *favorites)
+                      ```
+                      ```text
+                      >>>
+                      Favorite colors: 7, 33, 99
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Two problems with accepting a variable number of positional arguments.</p>
+                    <ul >
+                      <li>Using the <b style="color:green">*</b> operator with a generator may cause a program to run out of memory and crash.</li>
+                      <li>Adding new positional parameters to functions that accept <b style="color:green">*args</b> can introduce hard-to-detect bugs.</li>
+                    </ul>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def my_generator():
+                          for i in range(10):
+                              yield i
+                      
+                      def my_func(*args):
+                         print(args)
+                      
+                      it = my_generator()
+                      my_func(*it) # imagine a number much bigger 
+                                   # than 10 and causing a crash.
+                      ```
+                      ```text
+                      >>>
+                      (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # Add `sequence` as the 1st argument
+                      def log(sequence, message, *values): 
+                          if not values:
+                             print(f'{sequence} - {message}')
+                          else:
+                              values_str = ', '.join(str(x) for x in values)
+                              print(f'{sequence} - {message}: {values_str}')
+                      
+                      log(1, 'Favorites', 7, 33)      # New with *args OK
+                      log(1, 'Hi there')              # New message only OK
+                      log('Favorite numbers', 7, 33)  # Old usage breaks
+                      ```
+                      ```text
+                      >>>
+                      1 - Favorites: 7, 33
+                      1 - Hi there
+                      Favorite numbers  - 7: 33
+                      ```
+                    </textarea>
+                  </section>
+                </section>
             </div>
         </div>
 
