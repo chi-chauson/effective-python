@@ -2927,7 +2927,7 @@
                     </textarea>
                   </section>
                   <section>
-                    <p align="left">The Python interpreter traverses the scope to resolve the reference in this order</p>
+                    <p align="left">The Python interpreter traverses the scope to resolve the reference in this order (see first example in Appendix</p>
                     <ul >
                       <li>The current function’s scope.</li>
                       <li>Any enclosing scopes (such as other containing functions).</li>
@@ -2951,7 +2951,7 @@
                     </textarea>
                   </section>
                   <section>
-                    <p align="left">Assigning a value to a variable works differently.</p>
+                    <p align="left">Assigning a value to a variable works differently. (see second example in Appendix)</p>
                     <ul >
                       <li>If the variable is already defined in the current scope, it will just take on the new value. </li>
                       <li>If the variable doesn’t exist in the current scope, Python treats the assignment as a variable definition.</li>
@@ -3021,6 +3021,49 @@
                       <li>Use the <b style="color:green">nonlocal</b> statement to indicate when a closure can modify a variable in its enclosing scopes.</li>
                       <li>Avoid using <b style="color:green">nonlocal</b> statements for anything beyond simple functions.</li>
                     </ul>
+                  </section>
+                  <section>Appendix</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      meep = 25
+                      def enclosing():
+                          foo = 15
+                          def my_func():
+                              bar = 10
+                              print(bar)   # current function scope
+                              print(foo)   # enclosing scope
+                              print(meep)  # module scope
+                              print(str)   # built-in scope
+                              print(does_not_exist)
+                      
+                          my_func()
+
+                      enclosing()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      meep = 25
+                      def enclosing():
+                          foo = 15
+                          foo = 25
+                      
+                          def my_func():
+                              foo = 10
+                              bar = 5
+                              print(foo)  # current function scope
+                              print(bar)  # current function scope
+                      
+                          my_func()
+                          print(foo)  # enclosing scope
+                          print(bar)  # enclosing scope
+                          
+                      enclosing()
+                      ```
+                    </textarea>
                   </section>
                 </section>
                 <section>
