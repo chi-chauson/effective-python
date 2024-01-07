@@ -3134,6 +3134,189 @@
                     </textarea>
                   </section>
                 </section>
+                <section>
+                  <section>Item 23</section>
+                  <section>Provide Optional Behavior with Keyword Arguments</section>
+                  <section>Function arguments can be specified by position or by keyword.</section>
+                  <section>Example</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def remainder(number, divisor):
+                          return number % divisor
+                      
+                      assert remainder(20, 7) == 6
+
+                      # All normal arguments to Python functions 
+                      # can also be passed by keyword. You can even
+                      # mix and Matches
+
+                      remainder(20, 7)
+                      remainder(20, divisor=7)
+                      remainder(number=20, divisor=7)
+                      remainder(divisor=7, number=20)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Positional arguments must be specified before keyword arguments</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      remainder(number=20, 7)
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      SyntaxError: positional argument follows keyword argument
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Each argument can be specified only once</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      remainder(20, number=7)
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      TypeError: remainder() got multiple values for argument
+                      ➥ 'number'
+                      ```
+                    </textarea>
+                  </section>
+                  <section> Unpacking Dictionaries with <b style="color:green">**</b></section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      my_kwargs = {
+                          'number': 20,
+                          'divisor': 7,
+                      }
+                      assert remainder(**my_kwargs) == 6
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Combine <b style="color:green">**</b> with a regular keyword argument</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      my_kwargs = {
+                          'divisor': 7,
+                      }
+                      assert remainder(number=20, **my_kwargs) == 6
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Use <b style="color:green">**</b> multipe times</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      my_kwargs = {
+                          'number': 20,
+                      }
+                      other_kwargs = {
+                          'divisor': 7,
+                      }
+                      assert remainder(**my_kwargs, **other_kwargs) == 6
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Define a function to receive any named keyword argument using <b style="color:green">**kwargs</b></section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def print_parameters(**kwargs):
+                          for key, value in kwargs.items():
+                              print(f'{key} = {value}')
+                      
+                      print_parameters(alpha=1.5, beta=9, gamma=4)
+                      ```
+                      ```text
+                      >>>
+                      alpha = 1.5
+                      beta = 9
+                      gamma = 4
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Keyword arguments provides three significant benefits.</p>
+                    <ul >
+                      <li>Make the function call clearer to new readers of the code.</li>
+                      <li>Can have default values specified in the function definition.</li>
+                      <li>Extend a function’s parameters while remaining backward compatible with existing callers.</li>
+                    </ul>
+                  </section>
+                  <section>We saw the first benefit in the previous example.</section>
+                  <section>Look at the second benefit with an example. <p>Let's start with ...</p></section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def flow_rate(weight_diff, time_diff):
+                          return weight_diff / time_diff
+                      
+                      weight_diff = 0.5
+                      time_diff = 3
+                      flow = flow_rate(weight_diff, time_diff)
+                      print(f'{flow:.3} kg per second')
+                      ```
+                      ```text
+                      >>>
+                      0.167 kg per second
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # adding an argument for the time period scaling factor
+                      def flow_rate(weight_diff, time_diff, period):
+                          return (weight_diff / time_diff) * period
+
+                      # period is a required argument
+                      flow_per_second = flow_rate(weight_diff, time_diff, 1)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # make period optional
+                      def flow_rate(weight_diff, time_diff, period=1):
+                          return (weight_diff / time_diff) * period
+
+                      flow_per_second = flow_rate(weight_diff, time_diff)
+                      flow_per_hour = flow_rate(weight_diff, time_diff, period=3600)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Example for the third benefit ...</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # extend the function above to calculate 
+                      # flow rates in weight units besides kilograms.
+                      def flow_rate(weight_diff, time_diff,
+                                    period=1, units_per_kg=1):
+                          return ((weight_diff * units_per_kg) / time_diff) * period
+
+                      # calculate flow rate in lbs
+                      pounds_per_hour = flow_rate(weight_diff, time_diff,
+                                                  period=3600, units_per_kg=2.2)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Optional keyword arguments should always be passed by keyword instead of by position.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      #  it isn’t clear what the values 3600 and 2.2 correspond to.
+                      pounds_per_hour = flow_rate(weight_diff, time_diff, 3600, 2.2)
+                      ```
+                    </textarea>
+                  </section>
+                </section>
             </div>
         </div>
 
