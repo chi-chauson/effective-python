@@ -3781,6 +3781,93 @@
                     </textarea>
                   </section>
                 </section>
+                <section>
+                  <section>Item 26</section>
+                  <section>Define Function Decorators with <b style="color:green">functools.wraps</b></section>
+                  <section>Prelude</section>
+                  <section>A simple decorator using function</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def my_decorator(func):
+                          def wrapper():
+                              print("before the function is called.")
+                              func()
+                              print("after the function is called.")
+                          return wrapper
+                      
+                      @my_decorator
+                      def say_hello():
+                          print("Hello!")
+                      
+                      say_hello()
+                      ```
+                      ```text
+                      >>>
+                      before the function is called.
+                      Hello!
+                      after the function is called.
+                      ```
+                    </textarea>
+                  </section>
+                  <section>A decorator with parameters</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def repeat(n):
+                          def decorator(func):
+                              def wrapper(*args, **kwargs):
+                                  for _ in range(n):
+                                      result = func(*args, **kwargs)
+                                  return result
+                              return wrapper
+                          return decorator
+                      
+                      @repeat(n=3)
+                      def greet(name):
+                          print(f"Hello, {name}!")
+                      
+                      greet("Alice")
+                      ```
+                      ```text
+                      >>>
+                      Hello, Alice!
+                      Hello, Alice!
+                      Hello, Alice!
+                      ```
+                    </textarea>
+                  </section>
+                  <section>A decorator with using class</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      class RepeatDecorator:
+                          def __init__(self, n):
+                              self.n = n
+                      
+                          def __call__(self, func):
+                              def wrapper(*args, **kwargs):
+                                  for _ in range(self.n):
+                                      result = func(*args, **kwargs)
+                                  return result
+                              return wrapper
+                      
+                      @RepeatDecorator(n=3)
+                      def greet(name):
+                          print(f"Hello, {name}!")
+                      
+                      greet("Alice")
+                      ```
+                      ```text
+                      >>>
+                      Hello, Alice!
+                      Hello, Alice!
+                      Hello, Alice!
+                      ```
+                    </textarea>
+                  </section>
+                  
+                </section>
             </div>
         </div>
 
