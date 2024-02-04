@@ -3866,7 +3866,173 @@
                       ```
                     </textarea>
                   </section>
+                  <section>Decorators in Python are syntax to allow one function to modify another function at runtime.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def trace(func):
+                          def wrapper(*args, **kwargs):
+                              result = func(*args, **kwargs)
+                              print(f'{func.__name__}({args!r}, {kwargs!r}) '
+                                    f'-> {result!r}')
+                              return result
+                          return wrapper
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      @trace
+                      def fibonacci(n):
+                          """Return the n-th Fibonacci number"""
+                          if n in (0, 1):
+                              return n
+                          return (fibonacci(n - 2) + fibonacci(n - 1))
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Using the <b style="color:purple">@</b> symbol is equivalent to calling the decorator on the function it wraps and assigning the return value to the original name in the same scope</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      # Using the @ symbol is equivalent to calling 
+                      # the decorator on the function it wraps and 
+                      # assigning the return value to the original 
+                      # name in the same scope
+                      fibonacci = trace(fibonacci)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      fibonacci(4)
+                      ```
+                      ```text
+                      >>>
+                      fibonacci((0,), {}) -> 0
+                      fibonacci((1,), {}) -> 1
+                      fibonacci((2,), {}) -> 1
+                      fibonacci((1,), {}) -> 1
+                      fibonacci((0,), {}) -> 0
+                      fibonacci((1,), {}) -> 1
+                      fibonacci((2,), {}) -> 1
+                      fibonacci((3,), {}) -> 2
+                      fibonacci((4,), {}) -> 3
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Using decorators can cause strange behaviors in tools that do introspection, such as debuggers.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      print(fibonacci)
+                      ```
+                      ```text
+                      >>>
+                      <function trace.<locals>.wrapper at 0x108955dc0>
+                      ```
+                    </textarea>
+                  </section>
+                  <section>the <b style="color:blue">help</b> built-in function is useless when called on the decorated <b style="color:green">fibonacci</b> function.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      help(fibonacci)
+                      ```
+                      ```text
+                      >>>
+                      Help on function wrapper in module __main__:
+
+                      wrapper(*args, **kwargs)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Object serializers break because they can’t determine the location of the original function that was decorated</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      import pickle
+
+                      pickle.dumps(fibonacci)
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      AttributeError: Can't pickle local object 'trace.<locals>.
+                      ➥wrapper'
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Use the <b style="color:green">wraps</b> decorator from the <b style="color:green">functools</b> built-in module when you define your own decorators to avoid issues.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      from functools import wraps
+
+                      def trace(func):
+                          @wraps(func)
+                          def wrapper(*args, **kwargs):
+                               ...
+                          return wrapper
+                      @trace
+                      def fibonacci(n):
+                          ...
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      help(fibonacci)
+                      ```
+                      ```text
+                      >>>
+                      Help on function wrapper in module __main__:
+
+                      fibonacci(n)
+                            Return the n-th Fibonacci number
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Object serializers break because they can’t determine the location of the original function that was decorated</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      import pickle
+
+                      print(pickle.dumps(fibonacci))
+                      ```
+                      ```text
+                      >>>
+                      b'\x80\x04\x95\x1a\x00\x00\x00\x00\x00\x00\x00\x8c\x08__main__\
+                      ➥x94\x8c\tfibonacci\x94\x93\x94.'
+                      ```
+                    </textarea>
+                  </section>
                   
+                </section>
+                <section>
+                  <section>Item 27</section>
+                  <section>Use Comprehensions Instead of <b style="color:green">map</b> and <b style="color:green">filter</b></section>
+                  <section><i>list comprehensions</i> provides compact syntax for deriving a new <b style="color:purple">list</b> from another sequence or iterable.</section>
+                  <section>example</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                      squares = []
+                      for x in a:
+                          squares.append(x**2)
+                      print(squares)
+                      ```
+                      ```text
+                      >>>
+                      [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+                      ```
+                    </textarea>
+                  </section>
                 </section>
             </div>
         </div>
