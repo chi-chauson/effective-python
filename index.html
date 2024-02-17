@@ -4033,6 +4033,86 @@
                       ```
                     </textarea>
                   </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      squares = [x**2 for x in a]  # List comprehension
+                      print(squares)
+                      ```
+                      ```text
+                      >>>
+                      [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]
+                      ```
+                    </textarea>
+                  </section>
+                  <section><i>list comprehensions</i> are also clearer than the <b style="color:green">map</b> built-in function for simple cases.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      alt = map(lambda x: x ** 2, a)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Unlike <b style="color:green">map</b>, <i>list comprehensions</i> let you easily filter items from the input list</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      even_squares = [x**2 for x in a if x % 2 == 0]
+                      print(even_squares)
+                      ```
+                      ```text
+                      >>>
+                      [4, 16, 36, 64, 100
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Here is doing the same thing with <b style="color:green">map</b> and <b style="color:green">filter</b>.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      alt = map(lambda x: x**2, filter(lambda x: x % 2 == 0, a))
+                      assert even_squares == list(alt)
+                      ```
+                    </textarea>
+                  </section>
+                  <section><i>dictionary</i> and <i>set comprehensions</i> are the equivalents of list comprehensions for <b style="color:green">dict</b> and <b style="color:green">set</b>.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      even_squares_dict = {x: x**2 for x in a if x % 2 == 0}
+                      threes_cubed_set = {x**3 for x in a if x % 3 == 0}
+                      print(even_squares_dict)
+                      print(threes_cubed_set)
+                      ```
+                      ```text
+                      >>>
+                      {2: 4, 4: 16, 6: 36, 8: 64, 10: 100}
+                      {216, 729, 27}
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Again, it is possible acheive the same effect with <b style="color:green">map</b> and <b style="color:green">filter</b>.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      alt_dict = dict(map(lambda x: (x, x**2),
+                                      filter(lambda x: x % 2 == 0, a)))
+                      alt_set = set(map(lambda x: x**3,
+                                    filter(lambda x: x % 3 == 0, a)))
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Summary</p>
+                    <ul >
+                      <li>List comprehensions are clearer than the <b style="color:green">map</b> and <b style="color:green">filter</b> built-in functions because they don’t require <b style="color:green">lambda</b> expressions.</li>
+                      <li>List comprehensions allow you to easily skip items from the input <b style="color:green">list</b>, a behavior that <b style="color:green">map</b> doesn’t support without help from <b style="color:green">filter</b>.</li>
+                      <li>Dictionaries and sets may also be created using comprehensions. </li>
+                    </ul>
+                  </section>
+
+
+
                 </section>
             </div>
         </div>
