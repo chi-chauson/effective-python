@@ -4114,6 +4114,132 @@
 
 
                 </section>
+                <section>
+                  <section>Item 28</section>
+                  <section>Avoid More Than Two Control Subexpressions in Comprehensions</section>
+                  <section>example</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+                      flat = [x for row in matrix for x in row]
+                      print(flat)
+                      ```
+                      ```text
+                      >>>
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      squared = [[x**2 for x in row] for row in matrix]
+                      print(squared)
+                      ```
+                      ```text
+                      >>>
+                      [[1, 4, 9], [16, 25, 36], [49, 64, 81]]
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      my_lists = [
+                          [[1, 2, 3], [4, 5, 6]],
+                          ...
+                      ]
+                      flat = [x for sublist1 in my_lists
+                              for sublist2 in sublist1
+                              for x in sublist2]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>At this point, the multiline comprehension isn’t much shorter than the alternative.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      flat = []
+                      for sublist1 in my_lists:
+                          for sublist2 in sublist1:
+                              flat.extend(sublist2)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Comprehensions support multiple <b style="color:green">if</b> conditions. Multiple conditions at the same loop level have an implicit <b style="color:green">and</b> expression.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+                      b = [x for x in a if x > 4 if x % 2 == 0]
+                      c = [x for x in a if x > 4 and x % 2 == 0]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>it is extremely difficult to read the following</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+                      filtered = [[x for x in row if x % 3 == 0]
+                                  for row in matrix if sum(row) >= 10]
+                      print(filtered)
+                      ```
+                      ```text
+                      >>>
+                      [[6], [9]]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Things to Remember</p>
+                    <ul >
+                      <li>Comprehensions support multiple levels of loops and multiple conditions per loop level.</li>
+                      <li>Comprehensions with more than two control subexpressions are very difficult to read and should be avoided.</li>
+                    </ul>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 29</section>
+                  <section>Avoid Repeated Work in Comprehensions by Using Assignment Expressions</section>
+                  <section>example</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      stock = {
+                          'nails': 125,
+                          'screws': 35,
+                          'wingnuts': 8,
+                          'washers': 24,
+                      }
+                      
+                      order = ['screws', 'wingnuts', 'clips']
+                      
+                      def get_batches(count, size):
+                          return count // size
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      result = {}
+                      for name in order:
+                        count = stock.get(name, 0)
+                        batches = get_batches(count, 8)
+                        if batches:
+                          result[name] = batches
+                      print(result)
+                      ```
+                      ```text
+                      >>>
+                      [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                      ```
+                    </textarea>
+                  </section>
+                  
+                </section>
             </div>
         </div>
 
