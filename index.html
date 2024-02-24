@@ -4238,7 +4238,142 @@
                       ```
                     </textarea>
                   </section>
-                  
+                  <section>Re-implement the looping logic more succinctly using a dictionary comprehension</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      found = {name: get_batches(stock.get(name, 0), 8)
+                               for name in order
+                               if get_batches(stock.get(name, 0), 8)}
+                      print(found)
+                      ```
+                      ```text
+                      >>>
+                      {'screws': 4, 'wingnuts': 1}
+                      ```
+                    </textarea>
+                  </section>
+                  <section>An expression is repeated, which hurts readability and  increases the likelihood of introducing a bug</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      has_bug = {name: get_batches(stock.get(name, 0), 4)
+                                 for name in order
+                                 if get_batches(stock.get(name, 0), 8)}
+                      
+                      print('Expected:', found)
+                      print('Found: ', has_bug)
+                      ```
+                      ```text
+                      >>>
+                      Expected: {'screws': 4, 'wingnuts': 1}
+                      Found: {'screws': 8, 'wingnuts': 2}
+                      ```
+                    </textarea>
+                  </section>
+                  <section>An easy solution to these problems is to use the walrus operator (<b style="color:green">:=</b>)</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      found = {name: batches for name in order
+                               if (batches := get_batches(stock.get(name, 0), 8))
+                      ```
+                    </textarea>
+                  </section>
+                  <section>It is only valid to define an assignment expression in the value expression for a comprehension.</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      result = {name: (tenth := count // 10)
+                                for name, count in stock.items() if tenth > 0}
+                      ```
+                      ```text
+                      >>>
+                      Traceback ...
+                      NameError: name 'tenth' is not defined
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      result = {name: tenth for name, count in stock.items()
+                                if (tenth := count // 10) > 0}
+                      print(result)
+                      ```
+                      ```text
+                      >>>
+                      {'nails': 12, 'screws': 3, 'washers': 2}
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Sometimes, the walrus operator leak the loop variable into the containing scope </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      half = [(last := count // 2) for count in stock.values()]
+                      print(f'Last item of {half} is {last}')
+                      ```
+                      ```text
+                      >>>
+                      Last item of [62, 17, 4, 12] is 12
+                      ```
+                    </textarea>
+                  </section>
+                  <section>This leakage of the loop variable is similar to what happens with a normal <b style="color:green">for</b> loop</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      for count in stock.values(): # Leaks loop variable
+                          pass
+                      print(f'Last item of {list(stock.values())} is {count}')
+                      ```
+                      ```text
+                      >>>
+                      Last item of [125, 35, 8, 24] is 24
+                      ```
+                    </textarea>
+                  </section>
+                  <section>Normally, similar leakage doesn’t happen for the loop variables from comprehensions</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      half = [count // 2 for count in stock.values()]
+                      print(half) # Works
+                      print(count) # Exception because loop variable didn't leak
+                      ```
+                      ```text
+                      >>>
+                      [62, 17, 4, 12]
+                      Traceback ...
+                      NameError: name 'count' is not defined
+                      ```
+                    </textarea>
+                  </section>
+                  <section>It’s better not to leak loop variables and use assignment expressions only in the condition part of a comprehension.</section>
+                  <section>Using an assignment expression also works the same way in generator expressions</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      found = ((name, batches) for name in order
+                               if (batches := get_batches(stock.get(name, 0), 8)))
+                      print(next(found))
+                      print(next(found))
+                      ```
+                      ```text
+                      >>>
+                      ('screws', 4)
+                      ('wingnuts', 1)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Things to Remember</p>
+                    <ul >
+                      <li>Assignment expressions make it possible for comprehensions and generator expressions to reuse the value from one condition elsewhere in the same comprehension, which can improve readability and performance.</li>
+                      <li> Although it’s possible to use an assignment expression outside of a comprehension or generator expression’s condition, you should avoid doing so.</li>
+                    </ul>
+                  </section>
                 </section>
             </div>
         </div>
