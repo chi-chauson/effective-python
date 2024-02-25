@@ -4234,7 +4234,7 @@
                       ```
                       ```text
                       >>>
-                      [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                      {'screws': 4, 'wingnuts': 1}
                       ```
                     </textarea>
                   </section>
@@ -4276,7 +4276,7 @@
                     <textarea data-template>
                       ```python
                       found = {name: batches for name in order
-                               if (batches := get_batches(stock.get(name, 0), 8))
+                               if (batches := get_batches(stock.get(name, 0), 8))}
                       ```
                     </textarea>
                   </section>
