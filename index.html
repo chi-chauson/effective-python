@@ -4626,6 +4626,22 @@
                   </section>
                   <section>Having to pass a lambda function like this is clumsy</section>
                   <section>Alternative, provide a new container class that implements the iterator protocol</section>
+                  <section>Iterator in Python</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      a = [1, 2, 3]
+                      for x in a:
+                          pass
+                      
+                      it = iter(a)
+                      it = a.__iter__()
+
+                      value = next(it)
+                      value = it.__next__()
+                      ```
+                    </textarea>
+                  </section>
                   <section data-markdown>
                     <textarea data-template>
                       ```python
