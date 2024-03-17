@@ -4745,6 +4745,215 @@
                   </section>
 
                 </section>
+                <section>
+                  <section>Item 32</section>
+                  <section>Consider Generator Expressions for Large List Comprehensions</section>
+                  <section>List comprehensions consume significant amounts of memory and cause a program to crash for large inputs.</section>
+                  <section>example</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      value = [len(x) for x in open('my_file.txt')]
+                      print(value)
+                      ```
+                      ```text
+                      >>>
+                      [100, 57, 15, 1, 12, 75, 5, 86, 89, 11]
+                      ```
+                    </textarea>
+                  </section>
+                  <section>To solve this issue, Python provides generator expressions</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      it = (len(x) for x in open('my_file.txt'))
+                      print(it)
+                      ```
+                      ```text
+                      >>>
+                      <generator object <genexpr> at 0x108993dd0>
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      print(next(it))
+                      print(next(it))
+                      ```
+                      ```text
+                      >>>
+                      100
+                      57
+                      ```
+                    </textarea>
+                  </section>
+                  <section>You may compose generator expressions</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      roots = ((x, x**0.5) for x in it)
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      print(next(roots))
+                      ```
+                      ```text
+                      >>>
+                      (15, 3.872983346207417)
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Things to Remember</p>
+                    <ul >
+                      <li>List comprehensions can cause problems for large inputs by using too much memory.</li>
+                      <li>Generator expressions avoid memory issues by producing outputs one at a time as iterators.</li>
+                      <li>Generator expressions can be composed by passing the iterator from one generator expression into the <b style="color:green">for</b> subexpression of another.</li>
+                      <li>Generator expressions execute very quickly when chained together and are memory efficient.</li>
+                    </ul>
+                  </section>
+                </section>
+                <section>
+                  <section>Item 33</section>
+                  <section>Compose Multiple Generators with <b style="color:green">yield from</b></section>
+                  <section>example</section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def move(period, speed):
+                          for _ in range(period):
+                              yield speed
+                      
+                      def pause(delay):
+                          for _ in range(delay):
+                              yield 0
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def animate():
+                          for delta in move(4, 5.0):
+                              yield delta
+                          for delta in pause(3):
+                              yield delta
+                          for delta in move(2, 3.0):
+                              yield delta
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def render(delta):
+                          print(f'Delta: {delta:.1f}')
+                          # Move the images onscreen
+                          ...
+                      
+                      def run(func):
+                          for delta in func():
+                              render(delta)
+                      
+                      run(animate)
+                      ```
+                      ```text
+                      >>>
+                      Delta: 5.0
+                      Delta: 5.0
+                      Delta: 5.0
+                      Delta: 5.0
+                      Delta: 0.0
+                      Delta: 0.0
+                      Delta: 0.0
+                      Delta: 3.0
+                      Delta: 3.0
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      def animate_composed():
+                          yield from move(4, 5.0)
+                          yield from pause(3)
+                          yield from move(2, 3.0)
+                      
+                      run(animate_composed)
+                      ```
+                      ```text
+                      >>>
+                      Delta: 5.0
+                      Delta: 5.0
+                      Delta: 5.0
+                      Delta: 5.0
+                      Delta: 0.0
+                      Delta: 0.0
+                      Delta: 0.0
+                      Delta: 3.0
+                      Delta: 3.0
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      import timeit
+
+                      def child():
+                          for i in range(1_000_000):
+                              yield i
+                      
+                      def slow():
+                          for i in child():
+                              yield i
+                      
+                      def fast():
+                          yield from child()
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```python
+                      baseline = timeit.timeit(
+                          stmt='for _ in slow(): pass',
+                          globals=globals(),
+                          number=50)
+                      print(f'Manual nesting {baseline:.2f}s')
+                      comparison = timeit.timeit(
+                         stmt='for _ in fast(): pass',
+                         globals=globals(),
+                         number=50)
+                      print(f'Composed nesting {comparison:.2f}s')
+                      
+                      reduction = -(comparison - baseline) / baseline
+                      print(f'{reduction:.1%} less time')
+                      ```
+                    </textarea>
+                  </section>
+                  <section data-markdown>
+                    <textarea data-template>
+                      ```text
+                      >>>
+                      Manual nesting 4.02s
+                      Composed nesting 3.47s
+                      13.5% less time
+                      ```
+                    </textarea>
+                  </section>
+                  <section>
+                    <p align="left">Things to Remember</p>
+                    <ul >
+                      <li>The <b style="color:green">yield from</b> expression allows you to compose multiple nested generators together into a single combined generator.</li>
+                      <li><b style="color:green">yield from</b> provides better performance than manually iterating nested generators and yielding their outputs.</li>
+                    </ul>
+                  </section>
+                </section>
             </div>
         </div>
 
