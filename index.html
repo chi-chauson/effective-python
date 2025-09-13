@@ -361,7 +361,7 @@
                             'Today\'s soup is %(soup)s, '
                             'buy one get two %(oyster)s oysters, '
                             'and our special entrée is %(special)s.')
-                        old_formatted = template % {
+                        old_formatted = old_template_template % {
                             'soup': 'lentil',
                             'oyster': 'kumamoto',
                             'special': 'schnitzel',
@@ -1007,7 +1007,7 @@
                               if a % i == 0 and b % i == 0:
                                   is_coprime = False
                                   break
-                              return is_coprime
+                          return is_coprime
                       
                       assert coprime_alternate(4, 9)
                       assert not coprime_alternate(3, 6)
@@ -4975,4 +4975,5 @@
         </script>
     </body>
 </html>
+
 
