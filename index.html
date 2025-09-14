@@ -4954,6 +4954,164 @@
                     </ul>
                   </section>
                 </section>
+                <section>
+                    <section>Item 34</section>
+                    <section>Avoid Injecting Data into Generators with <code>send</code></section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                        ```python
+                        import math
+
+                        def wave(amplitude, steps):
+                            step_size = 2 * math.pi / steps
+                            for step in range(steps):
+                                radians = step * step_size
+                                fraction = math.sin(radians)
+                                output = amplitude * fraction
+                                yield output
+                        ```
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                        ```python
+                        def transmit(output):
+                            if output is None:
+                                print(f'Output is None')
+                            else:
+                                print(f'Output: {output:>5.1f}')
+
+                        def run(it):
+                            for output in it:
+                                transmit(output)
+
+                        run(wave(3.0, 8))
+                        ```
+                        ```text
+                        Output:  0.0
+                        Output:  2.1
+                        Output:  3.0
+                        ...
+                        ```
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                        Generators can also **receive input** via `send`:
+
+                        ```python
+                        def my_generator():
+                            received = yield 1
+                            print(f'received = {received}')
+
+                        it = iter(my_generator())
+                        output = it.send(None)   # prime
+                        print(f'output = {output}')
+                        it.send('hello!')
+                        ```
+                        ```text
+                        output = 1
+                        received = hello!
+                        ```
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                        Example: **modulating amplitude** with `send`
+
+                        ```python
+                        def wave_modulating(steps):
+                            step_size = 2 * math.pi / steps
+                            amplitude = yield
+                            for step in range(steps):
+                                radians = step * step_size
+                                fraction = math.sin(radians)
+                                output = amplitude * fraction
+                                amplitude = yield output
+                        ```
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                        ```python
+                        def run_modulating(it):
+                            amplitudes = [None, 7, 7, 2, 2, 10, 10]
+                            for amplitude in amplitudes:
+                                output = it.send(amplitude)
+                                transmit(output)
+
+                        run_modulating(wave_modulating(12))
+                        ```
+                        ```text
+                        Output is None
+                        Output:   0.0
+                        Output:   3.5
+                        Output:   6.1
+                        ...
+                        ```
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                        Problem:  
+                        Using `send` with `yield from` produces **unexpected None outputs**.
+
+                        ```python
+                        def complex_wave_modulating():
+                            yield from wave_modulating(3)
+                            yield from wave_modulating(4)
+                            yield from wave_modulating(5)
+                        ```
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                        ✅ Better alternative: **pass an iterator** instead of using `send`
+
+                        ```python
+                        def wave_cascading(amplitude_it, steps):
+                            step_size = 2 * math.pi / steps
+                            for step in range(steps):
+                                radians = step * step_size
+                                fraction = math.sin(radians)
+                                amplitude = next(amplitude_it)
+                                yield amplitude * fraction
+                        ```
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                        ```python
+                        def complex_wave_cascading(amplitude_it):
+                            yield from wave_cascading(amplitude_it, 3)
+                            yield from wave_cascading(amplitude_it, 4)
+                            yield from wave_cascading(amplitude_it, 5)
+
+                        amplitudes = [7,7,7,2,2,10,10,10]
+                        it = complex_wave_cascading(iter(amplitudes))
+                        for amplitude in amplitudes:
+                            transmit(next(it))
+                        ```
+                        </textarea>
+                    </section>
+
+                    <section data-markdown>
+                        <textarea data-template>
+                        ### Things to Remember
+                        - `send` injects data into generators, but adds complexity.
+                        - `send` + `yield from` → surprising `None` outputs.
+                        - Prefer passing **iterators** to generators instead.
+                        </textarea>
+                    </section>
+                </section>
             </div>
         </div>
 
